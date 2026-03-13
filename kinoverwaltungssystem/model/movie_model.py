@@ -1,6 +1,7 @@
 class Movie:
-    def __init__(self, titel: str, genre: str, dauer: int, altersfreigabe: int, erscheinungsjahr: int,
-                 beschreibung: str, produktionsfirma: str, regisseur: str, bewertung: float):
+    def __init__(self, titel: str, genre: str, dauer: int, altersfreigabe: int,
+                 erscheinungsjahr: int, beschreibung: str, produktionsfirma: str,
+                 regisseur: str, bewertung: float, imageUrl: str = ""):  # ← hinzufügen
         self.titel = titel
         self.altersfreigabe = altersfreigabe
         self.dauer = dauer
@@ -10,6 +11,7 @@ class Movie:
         self.produktionsfirma = produktionsfirma
         self.regisseur = regisseur
         self.bewertung = bewertung
+        self.imageUrl = imageUrl
 
     def get_titel(self):
         return self.titel
