@@ -1,12 +1,9 @@
 from dotenv import load_dotenv
 load_dotenv()
-
 from nicegui import ui
-from kinoverwaltungssystem.constants import Genre, Altersfreigabe
 from kinoverwaltungssystem.db.database import Database
-from kinoverwaltungssystem.model.user_model import User
 from kinoverwaltungssystem.view.home_ui import Home_UI
-from kinoverwaltungssystem.model.movie_model import Movie
+
 
 db = Database()
 
