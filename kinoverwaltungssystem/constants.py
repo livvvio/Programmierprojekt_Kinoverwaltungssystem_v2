@@ -27,7 +27,7 @@ class Genre(Enum):
     KOMÖDIE = "Komödie"
     KRIMI = "Krimi"
     ROMANTIK = "Romantik"
-    SCIENCE_FICTION = "Science-Fiction"
+    SCIENCE_FICTION = "Sci-Fi"
     WESTERN = "Western"
     SONSTIGE = "Sonstige"
 

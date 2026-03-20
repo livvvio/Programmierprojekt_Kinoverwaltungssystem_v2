@@ -1,7 +1,5 @@
 from dataclasses import dataclass
-
-from Programmierprojekt_Kinoverwaltungssystem_v2.kinoverwaltungssystem.constants import Altersfreigabe, Genre
-
+from kinoverwaltungssystem.constants import Genre, Altersfreigabe
 
 @dataclass
 class Movie:

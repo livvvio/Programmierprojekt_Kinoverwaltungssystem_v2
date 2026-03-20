@@ -1,6 +1,5 @@
 from nicegui import ui
-from Programmierprojekt_Kinoverwaltungssystem_v2.kinoverwaltungssystem.model.movie_model import Movie
-
+from kinoverwaltungssystem.model.movie_model import Movie
 class Home_UI:
     def __init__(self, movies: list[Movie]):
         self.movies = movies

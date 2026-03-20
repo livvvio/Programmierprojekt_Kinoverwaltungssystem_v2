@@ -1,13 +1,13 @@
+import os
+import json
 from pathlib import Path
 from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials, firestore
 from google.cloud.firestore_v1.base_query import FieldFilter
+from kinoverwaltungssystem.constants import Genre, Altersfreigabe
 from kinoverwaltungssystem.model.movie_model import Movie
 from kinoverwaltungssystem.model.user_model import User
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-KEY_PATH = 'serviceAccountKey.json'
 
 
 class Database:
@@ -15,24 +15,35 @@ class Database:
         self.db = None
 
     def init_db(self) -> None:
-        cred = credentials.Certificate(KEY_PATH)
+        key_json = os.environ.get("FIRESTORE_KEY")
+
+        if key_json:
+            key_dict = json.loads(key_json)
+            cred = credentials.Certificate(key_dict)
+            print("🔑 Firebase Key aus Umgebungsvariable geladen")
+        else:
+            BASE_DIR = Path(__file__).resolve().parent.parent.parent
+            KEY_PATH = BASE_DIR / "serviceAccountKey.json"
+            cred = credentials.Certificate(str(KEY_PATH))
+            print(f"🔑 Firebase Key aus Datei geladen: {KEY_PATH}")
+
         firebase_admin.initialize_app(cred)
         self.db = firestore.client(database_id="kinoverwaltung")
         print("Firebase verbunden ✅")
 
     def save_movie(self, movie: Movie) -> str:
         _, doc_ref = self.db.collection("movies").add({
-            "title":             movie.titel,
-            "genre":             movie.genre,
-            "duration":          movie.dauer,
-            "ageRating":         str(movie.altersfreigabe),
-            "releaseYear":       movie.erscheinungsjahr,
-            "director":          movie.regisseur,
+            "title": movie.titel,
+            "genre": movie.genre.value,
+            "duration": movie.dauer,
+            "ageRating": movie.altersfreigabe.value,
+            "releaseYear": movie.erscheinungsjahr,
+            "director": movie.regisseur,
             "productionCompany": movie.produktionsfirma,
-            "description":       movie.beschreibung,
-            "rating":            movie.bewertung,
-            "imageUrl":          movie.imageUrl,
-            "createdAt":         datetime.utcnow()
+            "description": movie.beschreibung,
+            "rating": movie.bewertung,
+            "imageUrl": movie.imageUrl,
+            "createdAt": datetime.utcnow()
         })
         print(f"🎬 Film gespeichert: {movie.titel} (ID: {doc_ref.id})")
         return doc_ref.id
@@ -43,16 +54,16 @@ class Database:
         for doc in docs:
             m = doc.to_dict()
             movies.append(Movie(
-                titel=            m["title"],
-                genre=            m["genre"],
-                dauer=            m["duration"],
-                altersfreigabe=   int(m["ageRating"]),
-                erscheinungsjahr= m["releaseYear"],
-                beschreibung=     m.get("description", ""),
-                produktionsfirma= m["productionCompany"],
-                regisseur=        m["director"],
-                bewertung=        m.get("rating", 0.0),
-                imageUrl=         m.get("imageUrl", "")
+                titel=m["title"],
+                genre=Genre(m["genre"]),
+                dauer=m["duration"],
+                altersfreigabe=Altersfreigabe(int(m["ageRating"])),
+                erscheinungsjahr=m["releaseYear"],
+                beschreibung=m.get("description", ""),
+                produktionsfirma=m["productionCompany"],
+                regisseur=m["director"],
+                bewertung=m.get("rating", 0.0),
+                imageUrl=m.get("imageUrl", "")
             ))
         return movies
 
@@ -70,15 +81,13 @@ class Database:
         self.db.collection("movies").document(doc_id).delete()
         print(f"🗑️ Film gelöscht (ID: {doc_id})")
 
-
-
     def save_user(self, user: User) -> str:
         _, doc_ref = self.db.collection("users").add({
-            "username":     user.username,
-            "email":        user.email,
+            "username": user.username,
+            "email": user.email,
             "passwordHash": user.password_hash,
-            "displayName":  user.display_name,
-            "createdAt":    datetime.utcnow()
+            "displayName": user.display_name,
+            "createdAt": datetime.utcnow()
         })
         print(f"👤 User gespeichert: {user.username} (ID: {doc_ref.id})")
         return doc_ref.id
@@ -89,10 +98,10 @@ class Database:
         for doc in docs:
             u = doc.to_dict()
             users.append(User(
-                username=      u["username"],
-                email=         u["email"],
-                password_hash= u["passwordHash"],
-                display_name=  u.get("displayName", "")
+                username=u["username"],
+                email=u["email"],
+                password_hash=u["passwordHash"],
+                display_name=u.get("displayName", "")
             ))
         return users
 
@@ -103,10 +112,10 @@ class Database:
         for doc in docs:
             u = doc.to_dict()
             return User(
-                username=      u["username"],
-                email=         u["email"],
-                password_hash= u["passwordHash"],
-                display_name=  u.get("displayName", "")
+                username=u["username"],
+                email=u["email"],
+                password_hash=u["passwordHash"],
+                display_name=u.get("displayName", "")
             )
         return None
 
