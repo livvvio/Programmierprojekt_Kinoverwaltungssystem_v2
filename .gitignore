@@ -1,0 +1,38 @@
+# created by virtualenv automatically
+kinoverwaltungssystem/db
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Firebase / Google Cloud Keys
+serviceAccountKey.json
+*serviceAccount*.json
+*firebase*.json
+credentials.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs
+*.log
+logs/
