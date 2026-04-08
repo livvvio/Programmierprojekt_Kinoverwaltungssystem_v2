@@ -1,0 +1,141 @@
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- ===== Movie (dataclass) ===== -->
+    <mxCell id="10" value="&lt;&lt;dataclass&gt;&gt;&#xa;Movie" style="swimlane;startSize=45;fontStyle=1;align=center;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="80" y="80" width="320" height="330" as="geometry" />
+    </mxCell>
+    <mxCell id="11" value="- titel: str&#xa;- genre: Genre&#xa;- dauer: int&#xa;- altersfreigabe: Altersfreigabe&#xa;- erscheinungsjahr: int&#xa;- beschreibung: str&#xa;- produktionsfirma: str&#xa;- regisseur: str&#xa;- bewertung: float&#xa;- imageUrl: str" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" vertex="1" parent="10">
+      <mxGeometry y="45" width="320" height="285" as="geometry" />
+    </mxCell>
+
+    <!-- ===== User ===== -->
+    <mxCell id="20" value="User" style="swimlane;startSize=30;fontStyle=1;align=center;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="80" y="500" width="320" height="340" as="geometry" />
+    </mxCell>
+    <mxCell id="21" value="- username: str&#xa;- email: str&#xa;- password_hash: str&#xa;- display_name: str" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" vertex="1" parent="20">
+      <mxGeometry y="30" width="320" height="90" as="geometry" />
+    </mxCell>
+    <mxCell id="22" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="20">
+      <mxGeometry y="120" width="320" height="10" as="geometry" />
+    </mxCell>
+    <mxCell id="23" value="+ get_username(): str&#xa;+ set_username(username: str)&#xa;+ get_email(): str&#xa;+ set_email(email: str)&#xa;+ get_password_hash(): str&#xa;+ set_password_hash(pw: str)&#xa;+ get_display_name(): str&#xa;+ set_display_name(name: str)&#xa;+ __repr__(): str" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" vertex="1" parent="20">
+      <mxGeometry y="130" width="320" height="210" as="geometry" />
+    </mxCell>
+
+    <!-- ===== Database ===== -->
+    <mxCell id="30" value="Database" style="swimlane;startSize=30;fontStyle=1;align=center;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="520" y="80" width="380" height="360" as="geometry" />
+    </mxCell>
+    <mxCell id="31" value="- db: firestore.Client | None" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" vertex="1" parent="30">
+      <mxGeometry y="30" width="380" height="30" as="geometry" />
+    </mxCell>
+    <mxCell id="32" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="30">
+      <mxGeometry y="60" width="380" height="10" as="geometry" />
+    </mxCell>
+    <mxCell id="33" value="+ __init__()&#xa;+ init_db(): None&#xa;+ save_movie(movie: Movie): str&#xa;+ load_movies(): list[Movie]&#xa;+ delete_movie_by_title(title: str): None&#xa;+ delete_movie_by_id(doc_id: str): None&#xa;+ save_user(user: User): str&#xa;+ load_users(): list[User]&#xa;+ get_user_by_email(email: str): User | None&#xa;+ delete_user_by_email(email: str): None" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" vertex="1" parent="30">
+      <mxGeometry y="70" width="380" height="290" as="geometry" />
+    </mxCell>
+
+    <!-- ===== Home_UI ===== -->
+    <mxCell id="40" value="Home_UI" style="swimlane;startSize=30;fontStyle=1;align=center;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="520" y="530" width="380" height="160" as="geometry" />
+    </mxCell>
+    <mxCell id="41" value="- movies: list[Movie]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" vertex="1" parent="40">
+      <mxGeometry y="30" width="380" height="30" as="geometry" />
+    </mxCell>
+    <mxCell id="42" value="" style="line;strokeColor=inherit;fillColor=none;" vertex="1" parent="40">
+      <mxGeometry y="60" width="380" height="10" as="geometry" />
+    </mxCell>
+    <mxCell id="43" value="+ __init__(movies: list[Movie])&#xa;+ render(): None&#xa;+ create_movie_card(movie: Movie): None" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" vertex="1" parent="40">
+      <mxGeometry y="70" width="380" height="90" as="geometry" />
+    </mxCell>
+
+    <!-- ===== Genre (Enum) ===== -->
+    <mxCell id="50" value="&lt;&lt;enumeration&gt;&gt;&#xa;Genre" style="swimlane;startSize=45;fontStyle=1;align=center;fontSize=13;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="1020" y="80" width="200" height="360" as="geometry" />
+    </mxCell>
+    <mxCell id="51" value="ABENTEUER&#xa;ACTION&#xa;THRILLER&#xa;DOKU&#xa;DRAMA&#xa;EROTIK&#xa;FANTASY&#xa;HORROR&#xa;KOMÖDIE&#xa;KRIMI&#xa;ROMANTIK&#xa;SCIENCE_FICTION&#xa;WESTERN&#xa;SONSTIGE" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" vertex="1" parent="50">
+      <mxGeometry y="45" width="200" height="315" as="geometry" />
+    </mxCell>
+
+    <!-- ===== Altersfreigabe (Enum) ===== -->
+    <mxCell id="60" value="&lt;&lt;enumeration&gt;&gt;&#xa;Altersfreigabe" style="swimlane;startSize=45;fontStyle=1;align=center;fontSize=13;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="1020" y="530" width="200" height="160" as="geometry" />
+    </mxCell>
+    <mxCell id="61" value="FSK0 = 0&#xa;FSK6 = 6&#xa;FSK12 = 12&#xa;FSK16 = 16&#xa;FSK18 = 18" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" vertex="1" parent="60">
+      <mxGeometry y="45" width="200" height="115" as="geometry" />
+    </mxCell>
+
+    <!-- ===== MovieAttribute (Enum) ===== -->
+    <mxCell id="70" value="&lt;&lt;enumeration&gt;&gt;&#xa;MovieAttribute" style="swimlane;startSize=45;fontStyle=1;align=center;fontSize=13;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="1020" y="780" width="200" height="290" as="geometry" />
+    </mxCell>
+    <mxCell id="71" value="TITEL&#xa;GENRE&#xa;DAUER&#xa;ALTERSFREIGABE&#xa;ERSCHEINUNGSJAHR&#xa;BESCHREIBUNG&#xa;PRODUKTIONSFIRMA&#xa;REGISSEUR&#xa;BEWERTUNG&#xa;IMAGE_URL" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" vertex="1" parent="70">
+      <mxGeometry y="45" width="200" height="245" as="geometry" />
+    </mxCell>
+
+    <!-- ===== app.py (module) ===== -->
+    <mxCell id="80" value="&lt;&lt;module&gt;&gt;&#xa;app.py" style="swimlane;startSize=45;fontStyle=1;align=center;fontSize=13;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="520" y="780" width="380" height="150" as="geometry" />
+    </mxCell>
+    <mxCell id="81" value="+ home_page(): None&#xa;+ ui.run(title, reload)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=11;" vertex="1" parent="80">
+      <mxGeometry y="45" width="380" height="105" as="geometry" />
+    </mxCell>
+
+    <!-- ===== ARROWS ===== -->
+
+    <!-- Movie -> Genre (Assoziation, solid) -->
+    <mxCell id="100" value="genre" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;endFill=0;fontSize=11;" edge="1" source="10" target="50" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Movie -> Altersfreigabe (Assoziation, solid) -->
+    <mxCell id="101" value="altersfreigabe" style="edgeStyle=orthogonalEdgeStyle;endArrow=open;endFill=0;fontSize=11;" edge="1" source="10" target="60" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Database -> Movie (Dependency, dashed) -->
+    <mxCell id="102" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=11;" edge="1" source="30" target="10" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Database -> User (Dependency, dashed) -->
+    <mxCell id="103" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=11;" edge="1" source="30" target="20" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Database -> Genre (Dependency, dashed) -->
+    <mxCell id="104" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=11;" edge="1" source="30" target="50" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Database -> Altersfreigabe (Dependency, dashed) -->
+    <mxCell id="105" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=11;" edge="1" source="30" target="60" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Database -> MovieAttribute (Dependency, dashed) -->
+    <mxCell id="106" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=11;" edge="1" source="30" target="70" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Home_UI -> Movie (Dependency, dashed) -->
+    <mxCell id="107" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=11;" edge="1" source="40" target="10" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- app.py -> Database (creates) -->
+    <mxCell id="108" value="«creates»" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=11;" edge="1" source="80" target="30" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- app.py -> Home_UI (creates) -->
+    <mxCell id="109" value="«creates»" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;endFill=0;fontSize=11;" edge="1" source="80" target="40" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+  </root>
+</mxGraphModel>
