@@ -7,6 +7,8 @@ from nicegui import ui, app as nicegui_app
 from kinoverwaltungssystem.db.database import Database
 from kinoverwaltungssystem.ui.home_ui import Home_UI
 from kinoverwaltungssystem.ui.login_ui import Login_UI
+from kinoverwaltungssystem.ui.movie_ui import Movie_UI
+from kinoverwaltungssystem.ui.ticket_ui import Ticket_UI
 
 database = Database()
 
@@ -14,7 +16,6 @@ database = Database()
 class Kinoverwaltungssystem:
 
     def __init__(self):
-        # hier müssen DB und die Services initialisiert werden
         database.init_db()
 
     def run(self):
@@ -34,3 +35,13 @@ def login_page():
         ui.navigate.to('/')
         return
     Login_UI(database).render()
+
+
+@ui.page('/movies')
+def movies_page():
+    Movie_UI(database).render()
+
+
+@ui.page('/tickets')
+def tickets_page():
+    Ticket_UI(database).render()
