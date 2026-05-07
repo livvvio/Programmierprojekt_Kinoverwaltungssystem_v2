@@ -20,6 +20,13 @@ class Database:
         self._session = Session(self.engine)
         print(f"SQLite verbunden ✅ ({DB_PATH})")
 
+        # Admin wird erstellt, falls noch nicht vorhanden
+        self.create_admin_if_not_exists(
+            email="admin@kinoverwaltung.ch",
+            password="admin123",
+            username="Admin",
+        )
+
     def _migrate_is_admin_column(self) -> None:
         """Fügt die Spalte 'isAdmin' hinzu, falls sie in der bestehenden DB fehlt."""
         inspector = inspect(self.engine)

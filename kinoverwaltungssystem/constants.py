@@ -3,6 +3,7 @@ from enum import Enum
 
 CURRENT_YEAR = datetime.now().year
 
+
 class MovieAttribute(Enum):
     TITEL = "Titel"
     GENRE = "Genre"
@@ -14,6 +15,7 @@ class MovieAttribute(Enum):
     REGISSEUR = "Regisseur"
     BEWERTUNG = "Bewertung"
     IMAGE_URL = "Image_URL"
+
 
 class Genre(Enum):
     ABENTEUER = "Abenteuer"

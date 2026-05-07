@@ -57,4 +57,5 @@ class Login_UI:
 
                 ui.button('Als Gast fortfahren', on_click=continue_as_guest).props('no-caps flat').classes(
                     'w-full font-bold rounded'
-                ).style('background-color: transparent !important; border: 1px solid #555; color: white !important; padding: 0.6rem;')
+                ).style(
+                    'background-color: transparent !important; border: 1px solid #555; color: white !important; padding: 0.6rem;')
