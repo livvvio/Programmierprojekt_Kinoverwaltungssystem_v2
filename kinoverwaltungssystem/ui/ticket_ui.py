@@ -44,8 +44,9 @@ class TicketPerson:
 
 
 class Ticket_UI:
-    def __init__(self, db: Database):
+    def __init__(self, db: Database, preselected_movie_id: int | None = None):
         self.db = db
+        self.preselected_movie_id = preselected_movie_id
         self.persons: list[TicketPerson] = []
         self.selected_movie: Movie | None = None
         self.is_weekend = False
@@ -104,10 +105,15 @@ class Ticket_UI:
                     movies = self.db.load_movies()
                     movie_options = {m.id: f'{m.titel} (FSK {m.altersfreigabe.value})' for m in movies}
 
+                    default_id = (
+                        self.preselected_movie_id
+                        if self.preselected_movie_id and self.preselected_movie_id in movie_options
+                        else (movies[0].id if movies else None)
+                    )
                     selected_movie_id = ui.select(
                         options=movie_options,
                         label='Film auswählen',
-                        value=movies[0].id if movies else None
+                        value=default_id
                     ).props('dark outlined').classes('w-full mb-4')
 
                     # Show time

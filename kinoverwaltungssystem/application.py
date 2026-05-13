@@ -43,5 +43,5 @@ def movies_page():
 
 
 @ui.page('/tickets')
-def tickets_page():
-    Ticket_UI(database).render()
+def tickets_page(movie_id: int = None):
+    Ticket_UI(database, movie_id).render()

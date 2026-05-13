@@ -1,4 +1,3 @@
-import html as html_lib
 from nicegui import ui, app as nicegui_app
 from kinoverwaltungssystem.model.movie_model import Movie
 
@@ -10,59 +9,6 @@ class Home_UI:
     def render(self):
         ui.query('body').style(
             'background-color: #141414; color: white; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;')
-
-        ui.add_head_html('''<style>
-            .kino-card {
-                position: relative;
-                border-radius: 10px;
-                overflow: hidden;
-                cursor: pointer;
-                background-color: #1a1a1a;
-                transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                            box-shadow 0.3s ease;
-            }
-            .kino-card:hover {
-                transform: scale(1.05) translateY(-5px);
-                box-shadow: 0 24px 48px rgba(0,0,0,0.9),
-                            0 0 0 2px rgba(229,9,20,0.8);
-                z-index: 20;
-            }
-            .kino-card img {
-                width: 100%;
-                aspect-ratio: 2/3;
-                object-fit: cover;
-                display: block;
-            }
-            .kino-card-overlay {
-                position: absolute;
-                inset: 0;
-                background: linear-gradient(to top,
-                    rgba(0,0,0,0.95) 0%,
-                    rgba(0,0,0,0.4) 50%,
-                    transparent 100%);
-                opacity: 0;
-                transition: opacity 0.3s ease;
-                display: flex;
-                flex-direction: column;
-                justify-content: flex-end;
-                padding: 14px;
-                gap: 4px;
-            }
-            .kino-card:hover .kino-card-overlay {
-                opacity: 1;
-            }
-            .kino-card-title {
-                color: white;
-                font-weight: 800;
-                font-size: 15px;
-                line-height: 1.25;
-            }
-            .kino-card-meta {
-                display: flex;
-                gap: 8px;
-                align-items: center;
-            }
-        </style>''')
 
         authenticated = nicegui_app.storage.user.get('authenticated', False)
         username = nicegui_app.storage.user.get('username', 'Gast')
@@ -118,7 +64,6 @@ class Home_UI:
                 ui.label('Alle Filme').classes('text-2xl font-black text-white')
                 ui.label(f'{len(self.movies)} Titel').classes('text-gray-500 text-sm')
 
-            # ── Grid ─────────────────────────────────────────────────────
             with ui.element('div').style(
                 'display: grid;'
                 'grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));'
@@ -128,32 +73,31 @@ class Home_UI:
                     self._render_card(movie)
 
     def _render_card(self, movie: Movie):
-        title   = html_lib.escape(movie.titel)
-        genre   = html_lib.escape(movie.genre.value)
-        image   = html_lib.escape(movie.imageUrl or '')
-        rating  = f'{movie.bewertung:.1f}'
-        year    = movie.erscheinungsjahr
-        fsk     = movie.altersfreigabe.value
-        duration = movie.dauer
+        with ui.element('div').classes(
+            'relative overflow-hidden rounded-xl cursor-pointer group bg-gray-900'
+            ' transition-all duration-300'
+            ' hover:scale-105 hover:-translate-y-1 hover:z-10'
+            ' hover:shadow-2xl hover:ring-2 hover:ring-red-600'
+        ).on('click', lambda m=movie: ui.navigate.to(f'/tickets?movie_id={m.id}')):
 
-        placeholder = (
-            '<div style="width:100%;aspect-ratio:2/3;background:#2a2a2a;'
-            'display:flex;align-items:center;justify-content:center;">'
-            '<span style="color:#4b5563;font-size:48px;">🎬</span></div>'
-        )
-        img_html = f'<img src="{image}" alt="{title}">' if image else placeholder
+            # Poster
+            if movie.imageUrl:
+                ui.image(movie.imageUrl).classes('w-full aspect-[2/3] object-cover block')
+            else:
+                with ui.element('div').classes(
+                    'w-full aspect-[2/3] flex items-center justify-center bg-gray-800'
+                ):
+                    ui.icon('movie').classes('text-gray-600 text-6xl')
 
-        ui.html(f'''
-        <div class="kino-card" onclick="window.location='/tickets'">
-            {img_html}
-            <div class="kino-card-overlay">
-                <div class="kino-card-title">{title}</div>
-                <div class="kino-card-meta">
-                    <span style="color:#22c55e;font-size:11px;font-weight:600;">{genre}</span>
-                    <span style="color:#6b7280;font-size:11px;">{year}</span>
-                    <span style="color:#6b7280;font-size:11px;">{duration} Min</span>
-                </div>
-                <div style="color:#f59e0b;font-size:11px;font-weight:700;">★ {rating} &nbsp;·&nbsp; FSK {fsk}</div>
-            </div>
-        </div>
-        ''')
+            # Hover overlay
+            with ui.element('div').classes(
+                'absolute inset-0 flex flex-col justify-end p-3 gap-1'
+                ' opacity-0 group-hover:opacity-100 transition-opacity duration-300'
+            ).style('background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);'):
+                ui.label(movie.titel).classes('text-white font-extrabold text-sm leading-tight')
+                with ui.row().classes('gap-2 items-center'):
+                    ui.label(movie.genre.value).classes('text-green-500 text-xs font-semibold')
+                    ui.label(str(movie.erscheinungsjahr)).classes('text-gray-400 text-xs')
+                    ui.label(f'{movie.dauer} Min').classes('text-gray-400 text-xs')
+                ui.label(f'★ {movie.bewertung:.1f}  ·  FSK {movie.altersfreigabe.value}').classes(
+                    'text-yellow-400 text-xs font-bold')
