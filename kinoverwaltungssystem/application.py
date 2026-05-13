@@ -20,7 +20,7 @@ class Kinoverwaltungssystem:
 
     def run(self):
         ui.run(title="Kinoverwaltungssystem", storage_secret="kino-geheim-schluessel",
-               port=int(os.environ.get("PORT", 8080)), reload=True)
+               port=int(os.environ.get("PORT", 8080)), reload=False)
 
 
 @ui.page('/')
