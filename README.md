@@ -24,8 +24,8 @@ Es gibt zwei Möglichkeiten, das Projekt herunterzuladen:
 - Befehl ausführen:
 
 ```bash
-    git clone https://github.com/livvvio/Programmierprojekt_Kinoverwaltungssystem.git
-    cd Programmierprojekt_Kinoverwaltungssystem
+    git clone https://github.com/livvvio/Programmierprojekt_Kinoverwaltungssystem_v2.git
+    cd Programmierprojekt_Kinoverwaltungssystem_v2
     python app.py
 ```
 ### ZipFile
