@@ -1,6 +1,7 @@
 from nicegui import ui, app as nicegui_app
 from kinoverwaltungssystem.db.database import Database
 from kinoverwaltungssystem.model.movie_model import Movie
+from kinoverwaltungssystem.ui.navbar import Navbar
 
 TICKET_GRUNDGEBUEHR = 15.00
 RABATT_KIND = 0.5
@@ -53,40 +54,7 @@ class Ticket_UI:
             'background-color: #141414; color: white; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;'
         )
 
-        authenticated = nicegui_app.storage.user.get('authenticated', False)
-        username = nicegui_app.storage.user.get('username', 'Gast')
-        is_guest = nicegui_app.storage.user.get('is_guest', True)
-        is_admin = nicegui_app.storage.user.get('is_admin', False)
-
-        def logout():
-            nicegui_app.storage.user.clear()
-            ui.navigate.to('/')
-
-        def go_to_login():
-            ui.navigate.to('/login')
-
-        # ── Navbar ──────────────────────────────────────────────────────────
-        with ui.header().classes(
-                'bg-black/80 backdrop-blur-md border-none p-4 justify-between items-center fixed top-0 w-full z-50'):
-            ui.label('Kinoverwaltungssystem').classes(
-                'text-red-600 text-3xl font-black tracking-tighter cursor-pointer'
-            ).on('click', lambda: ui.navigate.to('/'))
-            with ui.row().classes('items-center gap-6'):
-                ui.link('Home', '/').classes('text-gray-300 no-underline hover:text-white')
-                ui.link('Filme', '/movies').classes('text-gray-300 no-underline hover:text-white')
-                ui.link('Tickets', '/tickets').classes('text-white font-bold no-underline')
-                if authenticated:
-                    ui.label(f'{"Gast" if is_guest else username}').classes('text-gray-300 text-sm')
-                    if is_admin:
-                        ui.label('Admin').classes('text-xs font-bold px-2 py-0.5 rounded').style(
-                            'background-color: #e50914; color: white;')
-                    ui.button('Abmelden', on_click=logout).props('no-caps unelevated').classes(
-                        'text-white text-sm font-bold rounded px-3 py-1'
-                    ).style('background-color: #e50914 !important;')
-                else:
-                    ui.button('Anmelden', on_click=go_to_login).props('no-caps unelevated').classes(
-                        'text-white text-sm font-bold rounded px-3 py-1'
-                    ).style('background-color: #e50914 !important;')
+        Navbar('tickets').render()
 
         movies = self.db.load_movies()
         movie_by_id = {m.id: m for m in movies}

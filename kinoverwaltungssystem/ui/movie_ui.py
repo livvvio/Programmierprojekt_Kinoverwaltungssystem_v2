@@ -2,6 +2,7 @@ from nicegui import ui, app as nicegui_app
 from kinoverwaltungssystem.db.database import Database
 from kinoverwaltungssystem.model.movie_model import Movie
 from kinoverwaltungssystem.constants import Genre, Altersfreigabe, CURRENT_YEAR
+from kinoverwaltungssystem.ui.navbar import Navbar
 
 
 class Movie_UI:
@@ -14,37 +15,8 @@ class Movie_UI:
         )
 
         is_admin = nicegui_app.storage.user.get('is_admin', False)
-        authenticated = nicegui_app.storage.user.get('authenticated', False)
-        username = nicegui_app.storage.user.get('username', 'Gast')
-        is_guest = nicegui_app.storage.user.get('is_guest', True)
 
-        def logout():
-            nicegui_app.storage.user.clear()
-            ui.navigate.to('/')
-
-        def go_to_login():
-            ui.navigate.to('/login')
-
-        # ── Navbar ──────────────────────────────────────────────────────────
-        with ui.header().classes(
-                'bg-black/80 backdrop-blur-md border-none p-4 justify-between items-center fixed top-0 w-full z-50'):
-            ui.label('Kinoverwaltungssystem').classes('text-red-600 text-3xl font-black tracking-tighter cursor-pointer').on('click', lambda: ui.navigate.to('/'))
-            with ui.row().classes('items-center gap-6'):
-                ui.link('Home', '/').classes('text-gray-300 no-underline hover:text-white')
-                ui.link('Filme', '/movies').classes('text-white font-bold no-underline')
-                ui.link('Tickets', '/tickets').classes('text-gray-300 no-underline hover:text-white')
-                if authenticated:
-                    ui.label(f'{"Gast" if is_guest else username}').classes('text-gray-300 text-sm')
-                    if is_admin:
-                        ui.label('Admin').classes('text-xs font-bold px-2 py-0.5 rounded').style(
-                            'background-color: #e50914; color: white;')
-                    ui.button('Abmelden', on_click=logout).props('no-caps unelevated').classes(
-                        'text-white text-sm font-bold rounded px-3 py-1'
-                    ).style('background-color: #e50914 !important;')
-                else:
-                    ui.button('Anmelden', on_click=go_to_login).props('no-caps unelevated').classes(
-                        'text-white text-sm font-bold rounded px-3 py-1'
-                    ).style('background-color: #e50914 !important;')
+        Navbar('movies').render()
 
         # ── Main Content ─────────────────────────────────────────────────────
         with ui.column().classes('w-full px-6 md:px-12 pt-8 pb-12 gap-6'):
