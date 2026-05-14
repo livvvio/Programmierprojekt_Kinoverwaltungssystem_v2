@@ -47,7 +47,7 @@ class Movie_UI:
                     ).style('background-color: #e50914 !important;')
 
         # ── Main Content ─────────────────────────────────────────────────────
-        with ui.column().classes('w-full px-12 pt-24 pb-12'):
+        with ui.column().classes('w-full px-6 md:px-12 pt-8 pb-12 gap-6'):
 
             with ui.row().classes('w-full items-center justify-between mb-6'):
                 ui.label('Filmverwaltung').classes('text-3xl font-black text-white')

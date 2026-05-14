@@ -44,7 +44,7 @@ class Home_UI:
                     ).style('background-color: #e50914 !important;')
 
         # ── Main Content ─────────────────────────────────────────────────────
-        with ui.column().classes('w-full px-10 pt-24 pb-16'):
+        with ui.column().classes('w-full px-10 pt-8 pb-16'):
 
             if authenticated and not is_guest:
                 ui.label(f'Willkommen zurück, {username}!').classes('text-2xl font-bold mb-2 text-white')
