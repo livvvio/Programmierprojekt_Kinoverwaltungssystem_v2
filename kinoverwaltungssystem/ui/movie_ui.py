@@ -32,10 +32,12 @@ class Movie_UI:
             with ui.row().classes('items-center gap-6'):
                 ui.link('Home', '/').classes('text-gray-300 no-underline hover:text-white')
                 ui.link('Filme', '/movies').classes('text-white font-bold no-underline')
-                if is_admin:
-                    ui.link('Tickets', '/tickets').classes('text-gray-300 no-underline hover:text-white')
+                ui.link('Tickets', '/tickets').classes('text-gray-300 no-underline hover:text-white')
                 if authenticated:
                     ui.label(f'{"Gast" if is_guest else username}').classes('text-gray-300 text-sm')
+                    if is_admin:
+                        ui.label('Admin').classes('text-xs font-bold px-2 py-0.5 rounded').style(
+                            'background-color: #e50914; color: white;')
                     ui.button('Abmelden', on_click=logout).props('no-caps unelevated').classes(
                         'text-white text-sm font-bold rounded px-3 py-1'
                     ).style('background-color: #e50914 !important;')
