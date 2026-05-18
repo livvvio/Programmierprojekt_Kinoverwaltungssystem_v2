@@ -26,7 +26,7 @@ class Kinoverwaltungssystem:
 @ui.page('/')
 def home_page():
     movies = database.load_movies()
-    Home_UI(movies, db=database).render()
+    Home_UI(movies).render()
 
 
 @ui.page('/login')
