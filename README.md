@@ -61,6 +61,8 @@ Als Admin möchte ich Filme im Katalog hinzufügen, bearbeiten und löschen kön
 
 ## 🧩 Use Cases
 
+<img width="684" height="772" alt="Diagram-drawio" src="https://github.com/user-attachments/assets/271b00a9-babb-4686-acbe-a9598f978ef8" />
+
 ### UML Use Case Diagramm
 
 > 🚧 Use Case Diagramm hier einfügen.
