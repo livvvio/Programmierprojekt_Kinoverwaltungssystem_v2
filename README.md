@@ -87,6 +87,8 @@ Als Admin möchte ich Filme im Katalog hinzufügen, bearbeiten und löschen kön
 
 ## 🏛️ Architektur
 
+<img width="631" height="461" alt="Architektur drawio" src="https://github.com/user-attachments/assets/f0c81eb0-17a1-4284-afd6-554b7f948d26" />
+
 ### UML Klassendiagramm
 
 > 🚧 Siehe `Documentation/klassendiagramm.jpg` für das vollständige Klassendiagramm.
