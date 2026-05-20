@@ -1,151 +1,337 @@
-# 🎬 Kinoverwaltungssystem
+# 🎬 Kinoverwaltungssystem – Cinema Management System (Browser App)
 
-Diese Anwendung ermöglicht es dem Kunden oder dem Empfangsmitarbeiter im Kino, Filme hinzuzufügen, zu bearbeiten und zu
-löschen und Ticketpreise/Tickets für Kunden auszugeben. Das Programm speichert die Filme mit deren dazugehörigen
-Attributen in einer Datei.
+> UI Showcase
+
+Dieses Projekt demonstriert die Entwicklung einer browserbasierten Anwendung mit NiceGUI, mit Fokus auf saubere Architektur, Datenvalidierung und Datenbankintegration via ORM.
+
+Ziele des Projekts:
+- Den vollständigen Prozess von der Anforderungsanalyse bis zur Implementierung abdecken
+- Fortgeschrittene Python-Konzepte in einer Webanwendung anwenden
+- Datenvalidierung, Schichtenarchitektur und ORM-Einsatz demonstrieren
+- Sauberen, wartbaren und gut getesteten Code produzieren
+- Teamarbeit und professionelle Dokumentation fördern
 
 ---
-## 📥 Installation und Ausführung
- 
-### Voraussetzungen
 
-- Git installiert
-- Geeignete IDE (z. B. VS Code / PyCharm)
-- Aktuelle Python Version (3.x)
+## 📝 Anwendungsanforderungen
 
-Es gibt zwei Möglichkeiten, das Projekt herunterzuladen:
-- Zum einen über Git
-- Zum anderen als ZIP-Datei
+### Problem
+
+In kleineren Kinos werden Ticketverkäufe und Preisberechnungen oft manuell abgewickelt. Dies führt zu Fehlern bei der Altersfreigabe-Prüfung, falschen Rabattberechnungen und fehlenden Aufzeichnungen von Transaktionen.
+
+### Szenario
+
+Die Anwendung ermöglicht es Benutzern:
+- Einen Filmkatalog im Browser zu durchsuchen
+- Tickets für eine oder mehrere Personen zu buchen
+- Preise automatisch zu berechnen (inkl. Altersrabatte, Studentenrabatt, Wochenend- und Spätvorstellungszuschlag)
+- Ein generiertes PDF-Ticket herunterzuladen
+- Den Filmkatalog zu verwalten (nur Admin)
+
+---
+
+## 📖 User Stories
+
+### 1. Filmkatalog ansehen
+Als Benutzer möchte ich alle verfügbaren Filme in der Browser-App sehen.
+- **Eingaben:** keine
+- **Ausgaben:** Liste der Filme (`list[Movie]`)
+
+### 2. Tickets buchen und Gesamtpreis berechnen
+Als Kunde möchte ich Personen zu einer Buchung hinzufügen und den automatisch berechneten Gesamtpreis sehen.
+- **Eingaben:** Film-ID (`int`), Personendaten (Name, Alter, Student-Flag), Vorstellungszeit (`int`), Wochenende (`bool`)
+- **Ausgaben:** Preis pro Person, angewandte Rabatte, Gesamtbetrag (`float`)
+
+### 3. Automatische Rabatt- und Zuschlagsregeln
+Als Kunde möchte ich, dass Rabatte und Zuschläge automatisch anhand von Alter, Studentenstatus, Uhrzeit und Wochentag berechnet werden.
+- **Eingaben:** Alter der Person (`int`), ist Student (`bool`), Vorstellungszeit (`int`), ist Wochenende (`bool`)
+- **Ausgaben:** Rabattzeilen, angepasster Preis pro Person
+
+### 4. PDF-Ticket generieren
+Als Kunde möchte ich nach dem Checkout automatisch ein PDF-Ticket herunterladen können.
+- **Eingaben:** abgeschlossene Buchung (Film, Personen, Gesamtpreis, Vorstellungsdetails)
+- **Ausgaben:** PDF-Ticket-Datei (Download im Browser)
+
+### 5. Filmkatalog verwalten (Admin)
+Als Admin möchte ich Filme im Katalog hinzufügen, bearbeiten und löschen können.
+- **Eingaben:** Filmattribute (Titel, Genre, Dauer, Altersfreigabe, Erscheinungsjahr, Regisseur, etc.)
+- **Ausgaben:** aktualisierter Filmkatalog
+
+---
+
+## 🧩 Use Cases
+
+### UML Use Case Diagramm
+
+> 🚧 Use Case Diagramm hier einfügen.
+
+### Hauptanwendungsfälle
+- Filmkatalog anzeigen (Kunde)
+- Ticket buchen (Kunde)
+- Preisaufschlüsselung anzeigen (Kunde)
+- Checkout & PDF-Ticket herunterladen (Kunde)
+- Anmelden (Admin / Kunde)
+- Filme verwalten — Hinzufügen / Bearbeiten / Löschen (Admin)
+
+### Akteure
+- **Kunde** – durchsucht Filme, bucht Tickets, lädt PDF herunter
+- **Admin** – verwaltet den Filmkatalog, hat alle Kundenrechte
+
+### Wireframes / Mockups
+
+> 🚧 Screenshots der gewählten Wireframe-Mockups hier einfügen.
+
+---
+
+## 🏛️ Architektur
+
+### UML Klassendiagramm
+
+> 🚧 Siehe `Documentation/klassendiagramm.jpg` für das vollständige Klassendiagramm.
+
+### Schichten
+
+| Schicht | Technologie |
+|---|---|
+| UI | NiceGUI (browserbasierte Seiten) |
+| Anwendungslogik | Service-Klassen, Seitencontroller |
+| Persistenz | SQLite + SQLModel ORM + Database-Facade |
+
+### Designentscheidungen
+
+- **MVC-Struktur (Model–View–Controller):** Trennt UI-Seiten (`ui/`), Domänenmodelle (`model/`) und Geschäftslogik (`service/`, `db/`), was das Projekt einfacher testbar und erweiterbar macht.
+- **Facade Pattern:** Die Klasse `Database` kapselt das gesamte SQLite/SQLModel-Setup, Session-Management und Migrationen — der Rest der Anwendung ruft nur ihre öffentlichen Methoden auf.
+
+### Verwendete Entwurfsmuster
+
+- **Model-View-Controller / geschichtete MVC-Variante:** MVC ist hier sinnvoll, weil die Anwendung eine grafische Browser-Oberfläche, Benutzerinteraktionen, Geschäftsobjekte und Datenbankzugriff hat. Die Trennung dieser Verantwortlichkeiten macht das Projekt einfacher zu verstehen, zu testen und zu erweitern.
+- **Facade Pattern:** Facade ist sinnvoll, weil die Datenbankeinrichtung mehrere technische Details umfasst (Engine-Erstellung, Schema-Migration, Session-Lifecycle). Der Rest der Anwendung muss nicht wissen, wie der Datenbankmotor, Tabellen und Sessions verwaltet werden.
+
+---
+
+## 🗄️ Datenbank und ORM
+
+Die Anwendung verwendet **SQLModel**, um Domänenobjekte auf eine SQLite-Datenbank (`movies.db`) abzubilden.
+
+### Entitäten
+
+| Entität | Beschreibung |
+|---|---|
+| `Movie` | Film im Katalog (Titel, Genre, Dauer, Altersfreigabe, Erscheinungsjahr, Regisseur, etc.) |
+| `User` | Registrierter Benutzer mit Rollen-Flag (`is_admin`) |
+
+### Beziehungen
+
+- Ein `User` (Admin) kann viele `Movie`-Datensätze verwalten
+- Jede Buchung verknüpft einen `Movie` mit einer oder mehreren Personen (in-memory berechnet, Ausgabe als PDF)
+
+---
+
+## ✅ Projektanforderungen
 
 
-### Git: Repository klonen
-- Ordner wählen, in dem das Projekt liegen soll (z. B. Dokumente/Projekte)
-- Terminal/Eingabeaufforderung im gewünschten Ordner öffnen
-- Befehl ausführen:
+### 1. Browserbasierte App (NiceGUI)
+
+
+Die Anwendung läuft vollständig im Browser via NiceGUI. Benutzer können:
+- Den Filmkatalog auf der Startseite durchsuchen
+- Sich als Admin oder Kunde anmelden
+- Einen Film auswählen und eine Ticketbuchung konfigurieren
+- Eine Live-Preisaufschlüsselung pro Person sehen
+- Das generierte PDF-Ticket herunterladen
+
+Architekturhinweis (gemäss SS26-Richtlinien): Der Browser ist ein Thin Client; UI-Zustand und Geschäftslogik liegen auf der serverseitigen NiceGUI-App.
+
+### 2. Datenvalidierung
+
+Die Anwendung validiert alle Benutzereingaben, um Datenintegrität und eine reibungslose Benutzererfahrung sicherzustellen. Diese Prüfungen verhindern Abstürze und leiten den Benutzer zur korrekten Eingabe, entsprechend den Validierungsanforderungen der Projektrichtlinien.
+- Alterswerte müssen nicht-negative Ganzzahlen sein
+- Personennamen dürfen nicht leer sein
+- Die Vorstellungszeit muss eine gültige Stunde (0–23) sein
+- Filmattribute (Titel, Genre, Dauer, Altersfreigabe, Erscheinungsjahr) werden bei der Erstellung validiert
+- Altersfreigabe-Prüfungen verhindern Buchungen für minderjährige Personen
+
+### 3. Datenbankmanagement
+
+Alle persistenten Daten werden via **SQLModel** (ORM auf Basis von SQLAlchemy) verwaltet:
+- `Movie`-Datensätze werden über die `Database`-Facade erstellt, gelesen, aktualisiert und gelöscht
+- `User`-Datensätze (inkl. Standard-Admin) werden über dieselbe Facade verwaltet
+- Schema-Migrationen (z. B. Hinzufügen der Spalte `isAdmin`) werden beim Start automatisch ausgeführt
+
+---
+
+## ⚙️ Implementierung
+
+### Technologie
+
+- Python 3.x
+- NiceGUI
+- SQLModel / SQLAlchemy
+- ReportLab
+- pytest
+
+### 📚 Verwendete Bibliotheken
+
+| Bibliothek | Zweck |
+|---|---|
+| `nicegui` | Browserbasiertes UI-Framework |
+| `sqlmodel` | ORM für Datenmodelle und Datenbankzugriff |
+| `sqlalchemy` | Datenbank-Toolkit (wird von SQLModel genutzt) |
+| `reportlab` | PDF-Ticket-Generierung |
+| `python-dotenv` | Konfiguration via Umgebungsvariablen |
+| `pytest` | Testing |
+| `pytest-cov` | Test-Coverage-Auswertung |
+
+---
+
+## 📂 Repository-Struktur
+
+```
+kinoverwaltungssystem/
+├── __main__.py
+├── application.py
+├── constants.py
+├── movies.db
+├── db/
+│   └── database.py
+├── model/
+│   ├── auth.py
+│   ├── movie_model.py
+│   └── user_model.py
+├── service/
+│   ├── __init__.py
+│   └── ticket_service.py
+└── ui/
+    ├── home_ui.py
+    ├── login_ui.py
+    ├── movie_ui.py
+    ├── navbar.py
+    ├── ticket_success_ui.py
+    └── ticket_ui.py
+tests/
+├── test_unit.py
+├── test_database.py
+└── test_integration.py
+```
+
+---
+
+## 🚀 Ausführung
+
+### 1. Projekteinrichtung
+
+Python 3.13 (oder die Kursversion) wird benötigt.
+
+Virtuelle Umgebung erstellen und aktivieren:
+
+**macOS / Linux:**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+**Windows:**
+```bash
+python -m venv .venv
+.venv\Scripts\Activate
+```
+
+Abhängigkeiten installieren:
+```bash
+pip install -r requirements.txt
+```
+
+### 2. Konfiguration
+
+Es ist keine manuelle Konfiguration erforderlich. Beim ersten Start erstellt die Anwendung automatisch:
+- Die SQLite-Datenbank (`kinoverwaltungssystem/movies.db`)
+- Einen Standard-Admin-Account:
+  - **E-Mail:** `admin@kinoverwaltung.ch`
+  - **Passwort:** `admin123`
+
+Optional kann eine `.env`-Datei angelegt werden, um den Port zu ändern:
+```
+PORT=8080
+```
+
+### 3. Starten
 
 ```bash
-    git clone https://github.com/livvvio/Programmierprojekt_Kinoverwaltungssystem_v2.git
-    cd Programmierprojekt_Kinoverwaltungssystem_v2
-    python app.py
+python -m kinoverwaltungssystem
 ```
-### ZipFile
-- Zipfile herunterladen
-- Zipfile entpacken 
 
-### Ausführung mit einer Entwicklungsumgebung
-- VS Code / PyCharm starten
-- Ordner in der IDE öffnen und Programmierprojekt_Kinoverwaltungssystem auswählen
-- app.py öffnen
-- File starten
-  
-### Ausführung über das Terminal
+Die im Terminal angezeigte URL öffnen (Standard: `http://localhost:8080`).
 
-Alternativ zur Ausführung in einer IDE (VS Code / PyCharm) kann das Programm auch direkt über das Terminal gestartet werden.
+### 4. Benutzung
 
-1. **Terminal öffnen**  
-   - Windows: z. B. *Eingabeaufforderung* oder *PowerShell*  
-   - macOS / Linux: *Terminal*
+**Filme durchsuchen (Kunde):**
+1. Startseite öffnen — der Filmkatalog wird automatisch angezeigt.
+2. Auf einen Film klicken, um die Ticketbuchungsseite zu öffnen.
 
-2. **In den Projektordner wechseln**  
-   Falls die Repository z. B. in `Dokumente/Projekte` geklont wurde:
+**Ticket buchen:**
+1. Vorstellungszeit eingeben und auswählen, ob es ein Wochenende ist.
+2. Eine oder mehrere Personen hinzufügen (Name, Alter, Student-Flag).
+3. Die Preisaufschlüsselung (inkl. aller Rabatte und Zuschläge) aktualisiert sich live.
+4. Auf **Checkout** klicken, um das PDF-Ticket zu generieren und herunterzuladen.
 
-   ```bash
-   cd Pfad/zum/Ordner/Programmierprojekt_Kinoverwaltungssystem
-3. **Starten**
-   ```bash
-   python app.py
-   ```
-    
-   ins Terminal eingeben
----
+**Filme verwalten (Admin):**
+1. Unter `/login` mit den Admin-Zugangsdaten anmelden.
+2. Zu `/movies` navigieren, um Filme hinzuzufügen, zu bearbeiten oder zu löschen.
 
-## 🚀 Features & Funktionen
-
-### Admin
-
-- **Filmliste ansehen** – Der Benutzer wählt die Funktion «Filme anschauen» und wird nun gefragt, ob er nach einem
-  gewissen Film suchen möchte. Mittels Ja/Nein kann der Benutzer jetzt die Suchfunktion ein- oder ausschalten. Falls die
-  Suchfunktion eingeschaltet wurde, wird jetzt gefragt, wonach der Benutzer suchen möchte. Gleiches Spiel für die
-  Sortierfunktion. Hier kann der Benutzer nach einem Attribut der Klasse Film sortieren. Nach der Eingabe werden die
-  einzelnen Filme gefiltert/ungefiltert, sortiert/unsortiert untereinander in der Konsole ausgegeben.
-
-
-- **Film hinzufügen** – Wird die Funktion «Film bearbeiten» gewählt, so kann der Benutzer die Attribute eines Filmes
-  bearbeiten. Die eingegebenen Werte werden dann gespeichert.
-
-
-- **Film löschen** – Wird die Funktion «Film löschen» ausgewählt, so wird der Benutzer nach dem Filmtitel gefragt, um
-  den dazugehörigen Film zu löschen.
- 
-
-- **Benutzer wechseln** – Wird die Funktion «Benutzer wechseln» gewählt, so kann man zwischen dem Benutzer Admin und
-  dem Benutzer Kunde wechseln.
-
-
-- **Programm beenden** – Wenn der Benutzer die Funktion «Programm beenden» drückt, endet das Programm.
-
-### Demo der Adminansicht
-[![Demo Adminansicht ](https://img.youtube.com/vi/Wfg52nPl4uA/0.jpg)](https://youtu.be/Wfg52nPl4uA)
+> 🚧 Screenshots der Hauptseiten hier einfügen (oder Link zu einem kurzen Video):
 
 ---
 
-### Kunde
+## 🧪 Tests
 
-- **Filmliste ansehen** – Der Benutzer wählt die Funktion «Filme anschauen» und wird nun gefragt, ob er nach einem
-  gewissen Film suchen möchte. Mittels Ja/Nein kann der Benutzer jetzt die Suchfunktion ein- oder ausschalten. Falls die
-  Suchfunktion eingeschaltet wurde, wird jetzt gefragt, wonach der Benutzer suchen möchte. Gleiches Spiel für die
-  Sortierfunktion. Hier kann der Benutzer nach einem Attribut der Klasse Film sortieren. Nach der Eingabe werden die
-  einzelnen Filme gefiltert/ungefiltert, sortiert/unsortiert untereinander in der Konsole ausgegeben.
+> 🚧 Erkläre, was getestet wird und wie die Tests ausgeführt werden.
 
-
-- **Ticketpreis berechnen** – Wird die Funktion «Ticketpreis berechnen» ausgewählt, so wird der Benutzer nach:
-    - Vorstellungszeit
-    - Ist Wochenende
-    - Namen der Personen
-    - Alter der Personen (Altersfreigabe/Kinderrabatt/Rentnerrabatt)
-    - Student -> Ja/Nein
-
-  gefragt. Danach wird dem Kunden eine Übersicht über alle Kostenpunkte aufgelistet und die entsprechenden Abzüge werden
-  dargestellt.
-
-
-- **Benutzer wechseln** – Wird die Funktion «Benutzer wechseln» gewählt, so kann man zwischen dem Benutzer Admin und
-  dem Benutzer Kunde wechseln.
-
-
-- **Programm beenden** – Wenn der Benutzer die Funktion «Programm beenden» drückt, endet das Programm.
-
-### Demo der Kundensicht
-
-[![Demo Kundenansicht](https://img.youtube.com/vi/W09TTs6hkb0/0.jpg)](https://youtu.be/W09TTs6hkb0)
-
----
-
-## 🧩 Projektstruktur
-
+Alle Tests ausführen:
+```bash
+pytest tests/
 ```
-Programmierprojekt_Kinoverwaltungssystem
-│
-├── kinoverwaltungssystem/
-│   ├── file_operations.py  # Lädt, speichert die Filmdaten: Enthält die Klasse 'Movie' für Filmdaten
-│   ├── login.py            # Login Teil im Programm
-│   ├── menu_options.py     # Enthält die Funktionalität der Menu-Optionen
-│   ├── movies.json         # Datei, wo die Filme gespeichert werden
-│   └── utility.py          # Enthält Hilfsmethoden für das UI
-├── app.py                  # Hauptprogramm: Startpunkt des Systems
-└── README.md               # Informationen zum Programm
+
+Mit Coverage-Auswertung:
+```bash
+pytest --cov=kinoverwaltungssystem tests/
 ```
+
+### Test-Mix
+
+- **Unit-Tests** (`test_unit.py`): z. B. Preisberechnung pro Altersgruppe, Rabattlogik für Studenten, Wochenendzuschlag, Spätvorstellungszuschlag, kein Rabatt bei nicht zutreffenden Kriterien
+- **DB-Tests** (`test_database.py`): z. B. Filmkatalog-Abfrage gibt geseedete Daten zurück, User-Speicherung persistiert korrekt, Admin-Erstellung beim ersten Start
+- **Integrationstests** (`test_integration.py`): z. B. vollständiger Ticketbuchungsfluss generiert ein herunterladbares PDF, Altersfreigabe-Prüfung blockiert Buchung für Minderjährige
+
+### Vorlage für Testfälle
+
+| Feld | Beschreibung |
+|---|---|
+| Test-ID | Eindeutiger Bezeichner (z. B. TC_001) |
+| Titel | Worum geht es im Test? |
+| Vorbedingungen | Anforderungen vor der Testausführung |
+| Testschritte | Auszuführende Aktionen |
+| Testdaten / Eingabe | Konkrete Eingabewerte |
+| Erwartetes Ergebnis | Was sollte passieren |
+| Tatsächliches Ergebnis | Was tatsächlich passiert ist |
+| Status | Bestanden / Fehlgeschlagen |
+| Kommentare | Zusätzliche Hinweise oder gefundene Fehler |
+
 ---
 
-## 👤 Autoren
+## 👥 Team & Beiträge
 
-- Lukas Folch
-- Simon Moor
-- Livio Fritz
+> 🚧 Trage die individuellen Beiträge der Teammitglieder ein.
+
+| Name | Beitrag |
+|---|---|
+| Lukas Folch | 🚧 |
+| Simon Moor | 🚧 |
+| Livio Fritz | 🚧 |
+
 ---
 
-## ©️ Lizenz
+## 📝 Lizenz
 
-Dieses Projekt wurde für Bildungszwecke erstellt.
+Dieses Projekt wurde ausschliesslich für Bildungszwecke im Rahmen des Moduls «Advanced Programming» an der FHNW erstellt.
 
-
+MIT License
