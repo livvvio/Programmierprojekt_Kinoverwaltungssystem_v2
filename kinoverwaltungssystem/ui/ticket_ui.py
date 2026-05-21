@@ -51,7 +51,7 @@ def _do_pdf_download(movie, persons: list[TicketPerson], total: float,
     Kann aus ticket_ui und ticket_success_ui aufgerufen werden.
     """
     try:
-        from kinoverwaltungssystem.services.ticket_service import generate_ticket_pdf
+        from kinoverwaltungssystem.service.ticket_service import generate_ticket_pdf
     except ImportError as e:
         ui.notify(f'Import-Fehler: {e}', color='negative')
         return
@@ -371,6 +371,20 @@ class Ticket_UI:
         ):
             """Demo-Modus wenn kein Stripe-Key gesetzt ist."""
             order_id = str(uuid.uuid4())[:8].upper()
+
+            # Daten im Storage speichern – identisch zu Stripe-Flow
+            nicegui_app.storage.user['pending_ticket'] = {
+                'movie_id':    movie_obj.id,
+                'movie_titel': movie_obj.titel,
+                'total':       total,
+                'hour':        hour,
+                'is_weekend':  is_wknd,
+                'order_id':    order_id,
+                'persons': [
+                    {'name': p.name, 'age': p.age, 'is_student': p.is_student}
+                    for p in persons_snap
+                ],
+            }
 
             with ui.dialog() as dialog, ui.card().classes('rounded-xl').style(
                 'background-color:#1f1f1f; min-width:420px; max-width:560px;'

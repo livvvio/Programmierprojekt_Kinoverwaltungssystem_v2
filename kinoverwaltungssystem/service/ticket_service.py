@@ -1,6 +1,6 @@
 """
 ticket_service.py  –  PDF-Ticket Generator
-Ablegen unter: kinoverwaltungssystem/services/ticket_service.py
+Ablegen unter: kinoverwaltungssystem/service/ticket_service.py
 Voraussetzung: pip install reportlab
 """
 from __future__ import annotations
