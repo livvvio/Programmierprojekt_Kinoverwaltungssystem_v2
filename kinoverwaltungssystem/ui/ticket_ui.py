@@ -47,7 +47,7 @@ class TicketPerson:
 def _do_pdf_download(movie, persons: list[TicketPerson], total: float,
                      show_hour: int, is_weekend: bool, order_id: str):
     try:
-        from kinoverwaltungssystem.services.ticket_service import generate_ticket_pdf
+        from kinoverwaltungssystem.service.ticket_service import generate_ticket_pdf
     except ImportError as e:
         ui.notify(f'Import-Fehler: {e}', color='negative')
         return
