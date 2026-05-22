@@ -250,7 +250,6 @@ class Movie_UI:
 
                 ui.separator().style('background-color:#333;').classes('mx-4')
 
-                # Vorschau der gemappten Werte
                 mapped = self._map_omdb_to_movie(data)
                 with ui.row().classes('gap-4 flex-wrap px-4 py-3'):
                     ui.label('Wird importiert als:').classes('text-gray-500 text-xs w-full mb-1')
@@ -359,8 +358,8 @@ class Movie_UI:
     # ── Film-Tabelle ──────────────────────────────────────────────────────────
     def _render_movie_row(self, movie: Movie, refresh_fn, is_admin: bool):
         with ui.row().classes(
-            'w-full items-center gap-2 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors'
-        ).style('border-bottom:1px solid #222;'):
+            'w-full items-center gap-2 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors cursor-pointer'
+        ).style('border-bottom:1px solid #222;').on('click', lambda m=movie: ui.navigate.to(f'/tickets?movie_id={m.id}')):
             if movie.imageUrl:
                 ui.image(movie.imageUrl).classes('w-12 h-16 object-cover rounded shadow-md').style('flex-shrink:0;')
             else:
@@ -392,7 +391,7 @@ class Movie_UI:
                 ui.label(f'{movie.bewertung:.1f}').classes('text-gray-300 text-xs')
 
             if is_admin:
-                with ui.row().classes('w-28 gap-1 justify-center'):
+                with ui.row().classes('w-28 gap-1 justify-center').on('click.stop', lambda: None):
                     ui.button(icon='edit', on_click=lambda m=movie: self._open_movie_dialog(m)).props(
                         'flat round size=sm').classes('text-blue-400')
                     ui.button(icon='delete', on_click=lambda m=movie: self._confirm_delete(m, refresh_fn)).props(
