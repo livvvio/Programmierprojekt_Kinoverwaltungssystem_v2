@@ -32,7 +32,9 @@ class Home_UI:
             self._render_empty()
             return
 
-        top_rated = sorted(self.movies, key=lambda m: m.bewertung, reverse=True)
+        import random
+        top_rated = sorted(self.movies, key=lambda m: m.bewertung, reverse=True)[:25]
+        shuffled = random.sample(self.movies, min(25, len(self.movies)))
 
         @ui.refreshable
         def hero_section():
@@ -53,7 +55,7 @@ class Home_UI:
                 'flex: 1; display: flex; flex-direction: column; '
                 'padding: 10px 36px 8px 36px; background: #0a0a0a; overflow: hidden; gap: 0;'
             ):
-                self._render_carousel('Alle Filme', self.movies, 'c-all')
+                self._render_carousel('Alle Filme', shuffled, 'c-all')
                 ui.separator().style('background: #1a1a1a; margin: 4px 0; flex-shrink: 0;')
                 self._render_carousel('Top Bewertet', top_rated, 'c-top')
 
