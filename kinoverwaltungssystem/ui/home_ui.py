@@ -1,15 +1,19 @@
+import random
+
 from nicegui import ui, app as nicegui_app
+
 from kinoverwaltungssystem.model.movie_model import Movie
 from kinoverwaltungssystem.ui.navbar import Navbar
 
 
-class Home_UI:
+class HomeUI:
     def __init__(self, movies: list[Movie]):
         self.movies = movies
         self._featured_idx = 0
         self._refresh_hero = None
 
-    def render(self):
+    def render(self) -> None:
+        """Rendert die Startseite mit Hero-Bereich und Film-Karussells."""
         ui.query('body').style(
             'background-color: #0a0a0a; color: white; '
             'font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; '
@@ -32,7 +36,6 @@ class Home_UI:
             self._render_empty()
             return
 
-        import random
         top_rated = sorted(self.movies, key=lambda m: m.bewertung, reverse=True)[:25]
         shuffled = random.sample(self.movies, min(25, len(self.movies)))
 
@@ -45,15 +48,15 @@ class Home_UI:
         self._refresh_hero = hero_section.refresh
 
         with ui.element('div').style(
-            'position: fixed; top: 64px; left: 0; right: 0; bottom: 0; '
-            'display: flex; flex-direction: column;'
+                'position: fixed; top: 64px; left: 0; right: 0; bottom: 0; '
+                'display: flex; flex-direction: column;'
         ):
             with ui.element('div').style('flex: 0 0 56%; position: relative; overflow: hidden;'):
                 hero_section()
 
             with ui.element('div').style(
-                'flex: 1; display: flex; flex-direction: column; '
-                'padding: 10px 36px 8px 36px; background: #0a0a0a; overflow: hidden; gap: 0;'
+                    'flex: 1; display: flex; flex-direction: column; '
+                    'padding: 10px 36px 8px 36px; background: #0a0a0a; overflow: hidden; gap: 0;'
             ):
                 self._render_carousel('Alle Filme', shuffled, 'c-all')
                 ui.separator().style('background: #1a1a1a; margin: 4px 0; flex-shrink: 0;')
@@ -65,30 +68,27 @@ class Home_UI:
 
         ui.timer(6.0, _rotate)
 
-    def _render_hero(self, movie: Movie):
-        # Blurred background image
+    def _render_hero(self, movie: Movie) -> None:
+        """Rendert den grossen Hero-Bereich mit Hintergrundbild und Film-Infos."""
         if movie.imageUrl:
             with ui.element('div').style(
-                f'position: absolute; inset: 0; '
-                f'background-image: url("{movie.imageUrl}"); '
-                f'background-size: cover; background-position: center 20%; '
-                f'filter: blur(4px) brightness(0.3); transform: scale(1.07);'
+                    f'position: absolute; inset: 0; '
+                    f'background-image: url("{movie.imageUrl}"); '
+                    f'background-size: cover; background-position: center 20%; '
+                    f'filter: blur(4px) brightness(0.3); transform: scale(1.07);'
             ):
                 pass
 
-        # Gradient overlay
         with ui.element('div').style(
-            'position: absolute; inset: 0; '
-            'background: linear-gradient(100deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.5) 55%, transparent 100%);'
+                'position: absolute; inset: 0; '
+                'background: linear-gradient(100deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.5) 55%, transparent 100%);'
         ):
             pass
 
-        # Hero content
         with ui.element('div').style(
-            'position: relative; z-index: 1; height: 100%; '
-            'display: flex; align-items: flex-end; padding: 32px 48px;'
+                'position: relative; z-index: 1; height: 100%; '
+                'display: flex; align-items: flex-end; padding: 32px 48px;'
         ):
-            # Left: movie info
             with ui.element('div').style('max-width: 500px; flex: 1;'):
                 ui.label('IM KINO').style(
                     'color: #e50914; font-size: 10px; font-weight: 800; '
@@ -99,9 +99,7 @@ class Home_UI:
                     'line-height: 1.1; color: white; margin-bottom: 12px; display: block;'
                 )
                 with ui.row().style('gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap;'):
-                    ui.label(f'★ {movie.bewertung:.1f}').style(
-                        'color: #f5c518; font-weight: 800; font-size: 13px;'
-                    )
+                    ui.label(f'★ {movie.bewertung:.1f}').style('color: #f5c518; font-weight: 800; font-size: 13px;')
                     ui.label('·').style('color: #333; font-size: 16px;')
                     ui.label(movie.genre.value).style('color: #999; font-size: 12px;')
                     ui.label('·').style('color: #333; font-size: 16px;')
@@ -122,50 +120,48 @@ class Home_UI:
 
                 with ui.row().style('gap: 10px; align-items: center;'):
                     ui.button('Ticket kaufen',
-                        on_click=lambda m=movie: ui.navigate.to(f'/tickets?movie_id={m.id}')
-                    ).props('no-caps unelevated').style(
+                              on_click=lambda m=movie: ui.navigate.to(f'/tickets?movie_id={m.id}')
+                              ).props('no-caps unelevated').style(
                         'background: #e50914 !important; color: white; '
-                        'font-weight: 700; padding: 9px 26px; border-radius: 3px; '
-                        'font-size: 13px; letter-spacing: 0.3px;'
+                        'font-weight: 700; padding: 9px 26px; border-radius: 3px; font-size: 13px;'
                     )
                     ui.button('Alle Filme',
-                        on_click=lambda: ui.navigate.to('/movies')
-                    ).props('no-caps unelevated').style(
+                              on_click=lambda: ui.navigate.to('/movies')
+                              ).props('no-caps unelevated').style(
                         'background: rgba(255,255,255,0.1) !important; color: #ccc; '
                         'font-weight: 600; padding: 9px 20px; border-radius: 3px; '
                         'font-size: 13px; border: 1px solid rgba(255,255,255,0.15);'
                     )
 
-            # Right: poster
             if movie.imageUrl:
                 with ui.element('div').style(
-                    'flex: 0 0 auto; margin-left: 40px; '
-                    'width: min(130px, 13vw); align-self: flex-end; '
-                    'border-radius: 6px; overflow: hidden; '
-                    'box-shadow: 0 12px 40px rgba(0,0,0,0.8);'
+                        'flex: 0 0 auto; margin-left: 40px; '
+                        'width: min(130px, 13vw); align-self: flex-end; '
+                        'border-radius: 6px; overflow: hidden; '
+                        'box-shadow: 0 12px 40px rgba(0,0,0,0.8);'
                 ):
                     ui.image(movie.imageUrl).style('width: 100%; display: block;')
 
-        # Prev/next arrows on hero
+        # Prev/Next-Pfeile
         with ui.element('div').style(
-            'position: absolute; top: 50%; left: 12px; transform: translateY(-50%); z-index: 2;'
+                'position: absolute; top: 50%; left: 12px; transform: translateY(-50%); z-index: 2;'
         ):
             ui.button('', icon='chevron_left').props('flat dense round').style(
                 'color: white; background: rgba(0,0,0,0.4) !important; width: 36px; height: 36px;'
             ).on('click', lambda: self._hero_prev())
 
         with ui.element('div').style(
-            'position: absolute; top: 50%; right: 12px; transform: translateY(-50%); z-index: 2;'
+                'position: absolute; top: 50%; right: 12px; transform: translateY(-50%); z-index: 2;'
         ):
             ui.button('', icon='chevron_right').props('flat dense round').style(
                 'color: white; background: rgba(0,0,0,0.4) !important; width: 36px; height: 36px;'
             ).on('click', lambda: self._hero_next())
 
-        # Progress dots (max 8 shown)
+        # Fortschritts-Punkte (max. 8)
         visible = min(len(self.movies), 8)
         with ui.element('div').style(
-            'position: absolute; bottom: 14px; left: 48px; '
-            'display: flex; gap: 5px; z-index: 2; align-items: center;'
+                'position: absolute; bottom: 14px; left: 48px; '
+                'display: flex; gap: 5px; z-index: 2; align-items: center;'
         ):
             for i in range(visible):
                 is_active = i == (self._featured_idx % visible)
@@ -176,21 +172,23 @@ class Home_UI:
                     f'transition: all 0.3s ease;'
                 )
 
-    def _hero_prev(self):
+    def _hero_prev(self) -> None:
+        """Wechselt zum vorherigen Film im Hero-Bereich."""
         self._featured_idx = (self._featured_idx - 1) % len(self.movies)
         if self._refresh_hero:
             self._refresh_hero()
 
-    def _hero_next(self):
+    def _hero_next(self) -> None:
+        """Wechselt zum nächsten Film im Hero-Bereich."""
         self._featured_idx = (self._featured_idx + 1) % len(self.movies)
         if self._refresh_hero:
             self._refresh_hero()
 
-    def _render_carousel(self, title: str, movies: list[Movie], carousel_id: str):
+    def _render_carousel(self, title: str, movies: list[Movie], carousel_id: str) -> None:
+        """Rendert ein horizontales Filmkarussell mit Scroll-Buttons."""
         with ui.element('div').style('flex: 1; display: flex; flex-direction: column; min-height: 0; padding: 6px 0;'):
             with ui.row().style(
-                'align-items: center; justify-content: space-between; '
-                'margin-bottom: 6px; flex-shrink: 0;'
+                    'align-items: center; justify-content: space-between; margin-bottom: 6px; flex-shrink: 0;'
             ):
                 ui.label(title).style(
                     'font-size: 11px; font-weight: 700; color: #aaa; '
@@ -198,29 +196,30 @@ class Home_UI:
                 )
                 with ui.row().style('gap: 2px;'):
                     (ui.button('', icon='chevron_left')
-                        .props('flat dense')
-                        .style('color: #555; width: 26px; height: 26px; min-width: 0;')
-                        .on('click', lambda cid=carousel_id: ui.run_javascript(
-                            f'document.getElementById("{cid}").scrollBy({{left:-560,behavior:"smooth"}})'
-                        )))
+                     .props('flat dense')
+                     .style('color: #555; width: 26px; height: 26px; min-width: 0;')
+                     .on('click', lambda cid=carousel_id: ui.run_javascript(
+                        f'document.getElementById("{cid}").scrollBy({{left:-560,behavior:"smooth"}})'
+                    )))
                     (ui.button('', icon='chevron_right')
-                        .props('flat dense')
-                        .style('color: #555; width: 26px; height: 26px; min-width: 0;')
-                        .on('click', lambda cid=carousel_id: ui.run_javascript(
-                            f'document.getElementById("{cid}").scrollBy({{left:560,behavior:"smooth"}})'
-                        )))
+                     .props('flat dense')
+                     .style('color: #555; width: 26px; height: 26px; min-width: 0;')
+                     .on('click', lambda cid=carousel_id: ui.run_javascript(
+                        f'document.getElementById("{cid}").scrollBy({{left:560,behavior:"smooth"}})'
+                    )))
 
             with ui.element('div').props(f'id={carousel_id}').style(
-                'display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden; '
-                'flex: 1; align-items: stretch; padding-bottom: 2px;'
+                    'display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden; '
+                    'flex: 1; align-items: stretch; padding-bottom: 2px;'
             ):
                 for movie in movies:
                     self._render_card(movie)
 
-    def _render_card(self, movie: Movie):
+    def _render_card(self, movie: Movie) -> None:
+        """Rendert eine einzelne Film-Karte im Karussell."""
         with ui.element('div').classes('carousel-card').style(
-            'flex: 0 0 auto; width: 80px; cursor: pointer; position: relative; '
-            'border-radius: 5px; overflow: hidden;'
+                'flex: 0 0 auto; width: 80px; cursor: pointer; position: relative; '
+                'border-radius: 5px; overflow: hidden;'
         ).on('click', lambda m=movie: ui.navigate.to(f'/tickets?movie_id={m.id}')):
 
             if movie.imageUrl:
@@ -229,15 +228,15 @@ class Home_UI:
                 )
             else:
                 with ui.element('div').style(
-                    'width: 100%; aspect-ratio: 2/3; background: #1c1c1c; '
-                    'display: flex; align-items: center; justify-content: center;'
+                        'width: 100%; aspect-ratio: 2/3; background: #1c1c1c; '
+                        'display: flex; align-items: center; justify-content: center;'
                 ):
                     ui.icon('movie').style('color: #383838; font-size: 26px;')
 
             with ui.element('div').classes('card-overlay').style(
-                'position: absolute; inset: 0; '
-                'background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, transparent 55%); '
-                'display: flex; flex-direction: column; justify-content: flex-end; padding: 5px;'
+                    'position: absolute; inset: 0; '
+                    'background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, transparent 55%); '
+                    'display: flex; flex-direction: column; justify-content: flex-end; padding: 5px;'
             ):
                 ui.label(movie.titel).style(
                     'color: white; font-size: 8px; font-weight: 700; line-height: 1.25; '
@@ -247,18 +246,19 @@ class Home_UI:
                     'color: #f5c518; font-size: 8px; font-weight: 700; margin-top: 2px;'
                 )
 
-    def _render_empty(self):
+    def _render_empty(self) -> None:
+        """Rendert einen Leerstand-Hinweis, wenn keine Filme vorhanden sind."""
         is_admin = nicegui_app.storage.user.get('is_admin', False)
         with ui.element('div').style(
-            'display: flex; flex-direction: column; align-items: center; '
-            'justify-content: center; height: calc(100vh - 64px); gap: 16px;'
+                'display: flex; flex-direction: column; align-items: center; '
+                'justify-content: center; height: calc(100vh - 64px); gap: 16px;'
         ):
             ui.icon('movie').style('color: #222; font-size: 72px;')
             ui.label('Noch keine Filme vorhanden.').style('color: #555; font-size: 17px;')
             if is_admin:
                 ui.button('Ersten Film hinzufügen',
-                    on_click=lambda: ui.navigate.to('/movies')
-                ).props('no-caps unelevated').style(
+                          on_click=lambda: ui.navigate.to('/movies')
+                          ).props('no-caps unelevated').style(
                     'background: #e50914 !important; color: white; '
                     'font-weight: 700; padding: 10px 24px; border-radius: 3px;'
                 )

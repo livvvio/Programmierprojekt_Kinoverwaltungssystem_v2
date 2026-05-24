@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Optional
-from sqlmodel import SQLModel, Field
+
 from sqlalchemy import Column, String, Boolean
+from sqlmodel import SQLModel, Field
 
 
 class User(SQLModel, table=True):
@@ -22,20 +23,6 @@ class User(SQLModel, table=True):
                          default=lambda ctx: datetime.utcnow().isoformat())
     )
 
-    def get_username(self): return self.username
-    def set_username(self, username: str): self.username = username
-
-    def get_email(self): return self.email
-    def set_email(self, email: str): self.email = email
-
-    def get_password_hash(self): return self.password_hash
-    def set_password_hash(self, password_hash: str): self.password_hash = password_hash
-
-    def get_display_name(self): return self.display_name
-    def set_display_name(self, display_name: str): self.display_name = display_name
-
-    def is_admin_user(self) -> bool: return self.is_admin
-
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (f"User(username={self.username}, email={self.email}, "
                 f"display_name={self.display_name}, is_admin={self.is_admin})")

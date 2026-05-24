@@ -1,9 +1,11 @@
 from pathlib import Path
-from sqlmodel import create_engine, Session, select, SQLModel
+
 from sqlalchemy import delete, inspect, text
+from sqlmodel import create_engine, Session, select, SQLModel
+
+from kinoverwaltungssystem.model.auth import hash_password
 from kinoverwaltungssystem.model.movie_model import Movie
 from kinoverwaltungssystem.model.user_model import User
-from kinoverwaltungssystem.model.auth import hash_password
 
 
 class Database:
@@ -12,15 +14,14 @@ class Database:
         self._session: Session | None = None
 
     def init_db(self) -> None:
-        BASE_DIR = Path(__file__).resolve().parent.parent
-        DB_PATH = BASE_DIR / "movies.db"
-        self.engine = create_engine(f"sqlite:///{DB_PATH}", echo=False)
+        """Initialisiert die Datenbank, führt Migrationen durch und legt den Admin-User an."""
+        base_dir = Path(__file__).resolve().parent.parent
+        db_path = base_dir / "movies.db"
+        self.engine = create_engine(f"sqlite:///{db_path}", echo=False)
         SQLModel.metadata.create_all(self.engine)
         self._migrate_is_admin_column()
         self._session = Session(self.engine)
-        print(f"SQLite verbunden ✅ ({DB_PATH})")
-
-        # Admin wird erstellt, falls noch nicht vorhanden
+        print(f"SQLite verbunden ✅ ({db_path})")
         self.create_admin_if_not_exists(
             email="admin@kinoverwaltung.ch",
             password="admin123",
@@ -39,21 +40,24 @@ class Database:
     # ---------- MOVIES ----------
 
     def save_movie(self, movie: Movie) -> int:
+        """Speichert einen neuen Film und gibt die vergebene ID zurück."""
         self._session.add(movie)
         self._session.commit()
         self._session.refresh(movie)
         print(f"🎬 Film gespeichert: {movie.titel} (ID: {movie.id})")
         return movie.id
 
+    def update_movie(self, movie: Movie) -> None:
+        """Persistiert Änderungen an einem bestehenden Film-Objekt."""
+        self._session.add(movie)
+        self._session.commit()
+
     def load_movies(self) -> list[Movie]:
+        """Gibt alle Filme aus der Datenbank zurück."""
         return self._session.exec(select(Movie)).all()
 
-    def delete_movie_by_title(self, title: str) -> None:
-        result = self._session.execute(delete(Movie).where(Movie.titel == title))
-        self._session.commit()
-        print(f"🗑️ {result.rowcount} Film(e) gelöscht: {title}")
-
     def delete_movie_by_id(self, movie_id: int) -> None:
+        """Löscht einen Film anhand seiner ID."""
         self._session.execute(delete(Movie).where(Movie.id == movie_id))
         self._session.commit()
         print(f"🗑️ Film gelöscht (ID: {movie_id})")
@@ -61,6 +65,7 @@ class Database:
     # ---------- USERS ----------
 
     def save_user(self, user: User) -> int:
+        """Speichert einen neuen User und gibt die vergebene ID zurück."""
         self._session.add(user)
         self._session.commit()
         self._session.refresh(user)
@@ -68,12 +73,15 @@ class Database:
         return user.id
 
     def load_users(self) -> list[User]:
+        """Gibt alle User aus der Datenbank zurück."""
         return self._session.exec(select(User)).all()
 
     def get_user_by_email(self, email: str) -> User | None:
+        """Sucht einen User anhand der E-Mail-Adresse."""
         return self._session.exec(select(User).where(User.email == email)).first()
 
     def delete_user_by_email(self, email: str) -> None:
+        """Löscht einen User anhand der E-Mail-Adresse."""
         result = self._session.execute(delete(User).where(User.email == email))
         self._session.commit()
         print(f"🗑️ {result.rowcount} User gelöscht: {email}")
@@ -99,6 +107,7 @@ class Database:
     # ---------- Cleanup ----------
 
     def close(self) -> None:
+        """Schliesst Session und Engine."""
         if self._session:
             self._session.close()
             self._session = None

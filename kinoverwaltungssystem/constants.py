@@ -3,20 +3,6 @@ from enum import Enum
 
 CURRENT_YEAR = datetime.now().year
 
-
-class MovieAttribute(Enum):
-    TITEL = "Titel"
-    GENRE = "Genre"
-    DAUER = "Dauer"
-    ALTERSFREIGABE = "Altersfreigabe"
-    ERSCHEINUNGSJAHR = "Erscheinungsjahr"
-    BESCHREIBUNG = "Beschreibung"
-    PRODUKTIONSFIRMA = "Produktionsfirma"
-    REGISSEUR = "Regisseur"
-    BEWERTUNG = "Bewertung"
-    IMAGE_URL = "Image_URL"
-
-
 class Genre(Enum):
     ABENTEUER = "Abenteuer"
     ACTION = "Action"

@@ -1,13 +1,15 @@
 from nicegui import ui, app as nicegui_app
+
 from kinoverwaltungssystem.db.database import Database
 from kinoverwaltungssystem.model.auth import hash_password
 
 
-class Login_UI:
+class LoginUI:
     def __init__(self, db: Database):
         self.db = db
 
-    def render(self):
+    def render(self) -> None:
+        """Rendert die Login-Seite mit E-Mail/Passwort und Gast-Option."""
         ui.query('body').style(
             'background-color: #141414; color: white; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;'
         )
@@ -24,7 +26,6 @@ class Login_UI:
                     .props('dark outlined')
                     .classes('w-full mb-2')
                 )
-
                 error_label = ui.label('').classes('text-red-500 text-sm mb-3')
 
                 def try_login():
@@ -58,4 +59,5 @@ class Login_UI:
                 ui.button('Als Gast fortfahren', on_click=continue_as_guest).props('no-caps flat').classes(
                     'w-full font-bold rounded'
                 ).style(
-                    'background-color: transparent !important; border: 1px solid #555; color: white !important; padding: 0.6rem;')
+                    'background-color: transparent !important; border: 1px solid #555; color: white !important; padding: 0.6rem;'
+                )

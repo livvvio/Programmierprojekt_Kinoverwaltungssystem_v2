@@ -1,38 +1,34 @@
 from datetime import datetime
 from typing import Optional
-from sqlmodel import SQLModel, Field
+
 from sqlalchemy import Column, String, Integer, Float, Text, TypeDecorator
+from sqlmodel import SQLModel, Field
+
 from kinoverwaltungssystem.constants import Genre, Altersfreigabe
 
 
 class GenreType(TypeDecorator):
+    """SQLAlchemy-Typ für Genre-Enum (gespeichert als String)."""
     impl = String
     cache_ok = True
 
     def process_bind_param(self, value, dialect):
-        if isinstance(value, Genre):
-            return value.value
-        return value
+        return value.value if isinstance(value, Genre) else value
 
     def process_result_value(self, value, dialect):
-        if value is not None:
-            return Genre(value)
-        return value
+        return Genre(value) if value is not None else value
 
 
 class AltersfreigabeType(TypeDecorator):
+    """SQLAlchemy-Typ für Altersfreigabe-Enum (gespeichert als Integer)."""
     impl = Integer
     cache_ok = True
 
     def process_bind_param(self, value, dialect):
-        if isinstance(value, Altersfreigabe):
-            return value.value
-        return value
+        return value.value if isinstance(value, Altersfreigabe) else value
 
     def process_result_value(self, value, dialect):
-        if value is not None:
-            return Altersfreigabe(int(value))
-        return value
+        return Altersfreigabe(int(value)) if value is not None else value
 
 
 class Movie(SQLModel, table=True):
