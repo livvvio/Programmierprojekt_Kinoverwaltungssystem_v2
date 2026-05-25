@@ -138,35 +138,41 @@ class MovieUI:
             ui.timer(0.05, refresh_table, once=True)
 
     def _open_omdb_dialog(self) -> None:
-        """Öffnet den Dialog zum Suchen und Importieren eines Films via OMDb-API."""
+        """Öffnet den Dialog zum Suchen und Importieren von Filmen via OMDb-API (Live-Suche)."""
+        import threading
+
+        _search_timer: list = [None]  # Hält den aktuellen Debounce-Timer
+
         with ui.dialog() as dialog, ui.card().classes('rounded-xl w-full').style(
-                'background-color:#1f1f1f; max-width:620px;'
+                'background-color:#1f1f1f; max-width:680px; max-height:85vh; overflow-y:auto;'
         ):
             ui.label('Film via OMDb importieren').classes('text-white text-2xl font-bold mb-1')
-            ui.label('Suche nach einem Filmtitel und importiere ihn direkt in die Datenbank.').classes(
+            ui.label('Tippe einen Filmtitel – die Suche startet automatisch.').classes(
                 'text-gray-400 text-sm mb-4'
             )
 
-            search_input = ui.input(placeholder='Filmtitel eingeben...').props('dark outlined').classes('w-full mb-3')
+            search_input = ui.input(placeholder='Filmtitel eingeben...').props('dark outlined').classes('w-full mb-2')
             status_label = ui.label('').classes('text-sm mb-2')
             result_container = ui.column().classes('w-full gap-3')
 
             def do_search() -> None:
+                """Fragt OMDb mit der Search-API ab (liefert mehrere Treffer) und rendert die Ergebnisse."""
                 status_label.set_text('')
                 result_container.clear()
                 title = search_input.value.strip()
-                if not title:
-                    status_label.set_text('Bitte einen Titel eingeben.')
+                if len(title) < 2:
                     return
                 api_key = os.environ.get('OMDB_API_KEY', '')
                 if not api_key:
                     status_label.set_text('❌ OMDB_API_KEY nicht gesetzt.')
                     return
+                status_label.set_text('🔍 Suche läuft...')
                 try:
                     import requests
+                    # OMDb Search-Endpoint: liefert bis zu 10 Treffer pro Seite
                     resp = requests.get(
                         'https://www.omdbapi.com/',
-                        params={'t': title, 'apikey': api_key},
+                        params={'s': title, 'type': 'movie', 'apikey': api_key},
                         timeout=5,
                     )
                     data = resp.json()
@@ -175,57 +181,111 @@ class MovieUI:
                     return
 
                 if data.get('Response') == 'False':
-                    status_label.set_text(f'❌ {data.get("Error", "Film nicht gefunden.")}')
+                    status_label.set_text(f'❌ {data.get("Error", "Keine Treffer gefunden.")}')
                     return
 
+                results = data.get('Search', [])
+                status_label.set_text(f'{len(results)} Treffer gefunden')
+                existing_titles = {m.titel.lower() for m in self.db.load_movies()}
                 with result_container:
-                    self._render_omdb_result(data, status_label)
+                    for item in results:
+                        self._render_omdb_result(item, status_label, existing_titles)
 
-            ui.button('Suchen', on_click=do_search).props('no-caps unelevated').classes(
-                'text-white font-bold rounded px-4 mb-4'
-            ).style('background-color:#e50914 !important;')
+            def on_input_change() -> None:
+                """Debounce: startet die Suche 400 ms nach der letzten Eingabe."""
+                if _search_timer[0]:
+                    _search_timer[0].cancel()
+                t = threading.Timer(0.4, do_search)
+                t.start()
+                _search_timer[0] = t
 
-            ui.button('Schliessen', on_click=dialog.close).props('flat no-caps').classes('text-gray-400')
+            search_input.on('input', lambda: on_input_change())
+            search_input.on('keyup', lambda: on_input_change())
+
+            ui.button('Schliessen', on_click=dialog.close).props('flat no-caps').classes('text-gray-400 mt-2')
         dialog.open()
 
-    def _render_omdb_result(self, data: dict, status_label) -> None:
-        """Zeigt das OMDb-Suchergebnis mit Import-Button an."""
-        with ui.row().classes('w-full gap-4 items-start'):
-            poster = data.get('Poster', '')
+    def _render_omdb_result(self, data: dict, status_label, existing_titles: set[str]) -> None:
+        """Rendert eine einzelne OMDb-Trefferkarte mit Import-Button und Duplikat-Prüfung."""
+        title = data.get('Title', 'Unbekannt')
+        year = data.get('Year', '-')
+        poster = data.get('Poster', '')
+        imdb_id = data.get('imdbID', '')
+        already_exists = title.lower() in existing_titles
+
+        with ui.row().classes('w-full gap-4 items-center').style(
+                'background:#252525; border-radius:8px; padding:12px; border:1px solid #333;'
+        ):
             if poster and poster != 'N/A':
-                ui.image(poster).style('width:80px; height:120px; object-fit:cover; border-radius:6px; flex-shrink:0;')
-
-            with ui.column().classes('flex-1 gap-1'):
-                ui.label(data.get('Title', '-')).classes('text-white text-lg font-bold')
-                ui.label(
-                    f'{data.get("Year", "-")}  |  {data.get("Genre", "-")}  |  {data.get("Runtime", "-")}').classes(
-                    'text-gray-400 text-sm'
+                ui.image(poster).style(
+                    'width:54px; height:80px; object-fit:cover; border-radius:5px; flex-shrink:0;'
                 )
-                ui.label(data.get('Plot', '') if data.get('Plot') != 'N/A' else '').classes(
-                    'text-gray-500 text-xs'
-                )
+            else:
+                with ui.element('div').style(
+                        'width:54px; height:80px; background:#333; border-radius:5px; '
+                        'flex-shrink:0; display:flex; align-items:center; justify-content:center;'
+                ):
+                    ui.icon('movie').style('color:#555; font-size:24px;')
 
-        def do_import() -> None:
-            m = self._map_omdb_to_movie(data)
-            new_movie = Movie(
-                titel=data.get('Title', 'Unbekannt'),
-                genre=m['genre'],
-                dauer=m['dauer'],
-                erscheinungsjahr=m['erscheinungsjahr'],
-                altersfreigabe=m['altersfreigabe'],
-                regisseur=data.get('Director') or None,
-                produktionsfirma=data.get('Production') or None,
-                beschreibung=data.get('Plot') if data.get('Plot') != 'N/A' else None,
-                bewertung=m['bewertung'],
-                imageUrl=data.get('Poster', '') if data.get('Poster', '') != 'N/A' else '',
-            )
-            self.db.save_movie(new_movie)
-            status_label.set_text(f'✅ "{new_movie.titel}" wurde importiert!')
-            ui.notify(f'"{new_movie.titel}" erfolgreich importiert!', color='positive')
+            with ui.column().classes('flex-1 gap-0.5 min-w-0'):
+                ui.label(title).classes('text-white font-bold text-sm truncate')
+                ui.label(year).classes('text-gray-400 text-xs')
+                if already_exists:
+                    ui.label('✅ Bereits in der Datenbank').classes('text-green-500 text-xs font-semibold mt-1')
 
-        ui.button('⬇ In Datenbank importieren', on_click=do_import).props('no-caps unelevated').classes(
-            'text-white font-bold rounded px-4'
-        ).style('background-color:#e50914 !important;')
+            if already_exists:
+                ui.button('Bereits vorhanden').props('no-caps unelevated disable').classes(
+                    'text-gray-500 font-bold rounded px-3 text-xs flex-shrink-0'
+                ).style('background:#2a2a2a !important; border:1px solid #444; cursor:not-allowed;')
+            else:
+                btn_container = ui.element('div').classes('flex-shrink-0')
+
+                def do_import(t=title, d=data, imid=imdb_id, bc=btn_container) -> None:
+                    """Lädt Detaildaten per imdbID nach, speichert den Film und deaktiviert den Button."""
+                    api_key = os.environ.get('OMDB_API_KEY', '')
+                    try:
+                        import requests
+                        detail = requests.get(
+                            'https://www.omdbapi.com/',
+                            params={'i': imid, 'apikey': api_key},
+                            timeout=5,
+                        ).json() if imid else d
+                    except Exception:
+                        detail = d
+
+                    # Vor dem Speichern nochmals gegen DB prüfen (verhindert Doppelklick-Duplikate)
+                    if detail.get('Title', t).lower() in existing_titles:
+                        ui.notify('Film bereits vorhanden.', color='warning')
+                        return
+
+                    m = self._map_omdb_to_movie(detail)
+                    new_movie = Movie(
+                        titel=detail.get('Title', t),
+                        genre=m['genre'],
+                        dauer=m['dauer'],
+                        erscheinungsjahr=m['erscheinungsjahr'],
+                        altersfreigabe=m['altersfreigabe'],
+                        regisseur=detail.get('Director') or None,
+                        produktionsfirma=detail.get('Production') or None,
+                        beschreibung=detail.get('Plot') if detail.get('Plot') != 'N/A' else None,
+                        bewertung=m['bewertung'],
+                        imageUrl=detail.get('Poster', '') if detail.get('Poster', '') != 'N/A' else '',
+                    )
+                    self.db.save_movie(new_movie)
+                    existing_titles.add(new_movie.titel.lower())
+                    status_label.set_text(f'✅ "{new_movie.titel}" importiert!')
+                    ui.notify(f'"{new_movie.titel}" erfolgreich importiert!', color='positive')
+                    # Button durch "Bereits vorhanden" ersetzen
+                    bc.clear()
+                    with bc:
+                        ui.button('Bereits vorhanden').props('no-caps unelevated disable').classes(
+                            'text-gray-500 font-bold rounded px-3 text-xs'
+                        ).style('background:#2a2a2a !important; border:1px solid #444; cursor:not-allowed;')
+
+                with btn_container:
+                    ui.button('⬇ Importieren', on_click=do_import).props('no-caps unelevated').classes(
+                        'text-white font-bold rounded px-3 text-xs'
+                    ).style('background-color:#e50914 !important;')
 
     @staticmethod
     def _map_omdb_to_movie(data: dict) -> dict:
@@ -386,8 +446,10 @@ class MovieUI:
             error_label = ui.label('').classes('text-red-500 text-sm mb-2')
 
             def save() -> None:
-                """Validiert und speichert den Film (neu oder bearbeitet)."""
-                if not titel_input.value.strip():
+                """Validiert, prüft auf Duplikate und speichert den Film (neu oder bearbeitet)."""
+                error_label.set_text('')
+                new_titel = titel_input.value.strip()
+                if not new_titel:
                     error_label.set_text('Bitte Titel eingeben.')
                     return
                 try:
@@ -397,6 +459,20 @@ class MovieUI:
                 except (TypeError, ValueError):
                     error_label.set_text('Ungültige numerische Eingabe.')
                     return
+
+                # Duplikat-Prüfung: gleicher Titel + gleicher Erscheinungsjahr (case-insensitiv)
+                if not is_edit:
+                    duplicate = next(
+                        (m for m in self.db.load_movies()
+                         if m.titel.lower() == new_titel.lower()
+                         and m.erscheinungsjahr == new_jahr),
+                        None
+                    )
+                    if duplicate:
+                        error_label.set_text(
+                            f'❌ "{duplicate.titel}" ({duplicate.erscheinungsjahr}) existiert bereits.'
+                        )
+                        return
 
                 genre_enum = Genre(genre_select.value)
                 fsk_enum = Altersfreigabe(int(fsk_select.value))
