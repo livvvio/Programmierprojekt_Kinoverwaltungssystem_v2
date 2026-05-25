@@ -13,6 +13,23 @@ Ziele des Projekts:
 
 ---
 
+## Inhaltsverzeichnis
+
+- [📝 Anwendungsanforderungen](#-anwendungsanforderungen)
+- [📖 User Stories](#-user-stories)
+- [🧩 Use Cases](#-use-cases)
+- [🏛️ Architektur](#architektur)
+- [🗄️ Datenbank und ORM](#-datenbank-und-orm)
+- [✅ Projektanforderungen](#-projektanforderungen)
+- [⚙️ Implementierung](#-implementierung)
+- [📂 Repository-Struktur](#-repository-struktur)
+- [🚀 Ausführung](#-ausführung)
+- [🧪 Tests](#-tests)
+- [👥 Team & Beiträge](#-team--beiträge)
+- [📝 Lizenz](#-lizenz)
+
+---
+
 ## 📝 Anwendungsanforderungen
 
 ### Problem
@@ -84,7 +101,7 @@ Als Admin möchte ich Filme im Katalog hinzufügen, bearbeiten und löschen kön
 > 🚧 Screenshots der gewählten Wireframe-Mockups hier einfügen.
 
 ---
-
+<a id="-architektur"></a>
 ## 🏛️ Architektur
 
 <img width="631" height="461" alt="Architektur drawio" src="https://github.com/user-attachments/assets/f0c81eb0-17a1-4284-afd6-554b7f948d26" />
@@ -112,7 +129,7 @@ Als Admin möchte ich Filme im Katalog hinzufügen, bearbeiten und löschen kön
 - **Facade Pattern:** Facade ist sinnvoll, weil die Datenbankeinrichtung mehrere technische Details umfasst (Engine-Erstellung, Schema-Migration, Session-Lifecycle). Der Rest der Anwendung muss nicht wissen, wie der Datenbankmotor, Tabellen und Sessions verwaltet werden.
 
 ---
-
+<a id="-datenbank-und-orm"></a>
 ## 🗄️ Datenbank und ORM
 
 Die Anwendung verwendet **SQLModel**, um Domänenobjekte auf eine SQLite-Datenbank (`movies.db`) abzubilden.
@@ -163,7 +180,7 @@ Alle persistenten Daten werden via **SQLModel** (ORM auf Basis von SQLAlchemy) v
 - Schema-Migrationen (z. B. Hinzufügen der Spalte `isAdmin`) werden beim Start automatisch ausgeführt
 
 ---
-
+<a id="-implementierung"></a>
 ## ⚙️ Implementierung
 
 ### Technologie
@@ -247,16 +264,24 @@ pip install -r requirements.txt
 
 ### 2. Konfiguration
 
-Es ist keine manuelle Konfiguration erforderlich. Beim ersten Start erstellt die Anwendung automatisch:
+Das Projekt benötigt eine `.env`-Datei im Projekt-Root. Kopiere die Vorlage und fülle die Werte aus:
+
+```bash
+cp .env.example .env
+```
+
+Du brauchst Keys von [Stripe](https://dashboard.stripe.com/apikeys) und [OMDb](https://www.omdbapi.com/apikey.aspx) (beide kostenlos).
+
+> ⚠️ Die `.env`-Datei enthält Secrets und darf **nicht** committet werden – sie steht bereits in der `.gitignore`.
+
+<br>
+<br>
+
+Für die Datenbank ist keine manuelle Konfiguration erforderlich. Beim ersten Start erstellt die Anwendung automatisch:
 - Die SQLite-Datenbank (`kinoverwaltungssystem/movies.db`)
 - Einen Standard-Admin-Account:
   - **E-Mail:** `admin@kinoverwaltung.ch`
   - **Passwort:** `admin123`
-
-Optional kann eine `.env`-Datei angelegt werden, um den Port zu ändern:
-```
-PORT=8080
-```
 
 ### 3. Starten
 
