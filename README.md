@@ -1,7 +1,5 @@
 # 🎬 Kinoverwaltungssystem – Cinema Management System (Browser App)
 
-> UI Showcase
-
 Dieses Projekt demonstriert die Entwicklung einer browserbasierten Anwendung mit NiceGUI, mit Fokus auf saubere
 Architektur, Datenvalidierung und Datenbankintegration via ORM.
 
@@ -13,14 +11,14 @@ Ziele des Projekts:
 - Sauberen, wartbaren und gut getesteten Code produzieren
 - Teamarbeit und professionelle Dokumentation fördern
 
----
+<br>
 
 ## Inhaltsverzeichnis
 
 - [📝 Anwendungsanforderungen](#-anwendungsanforderungen)
 - [📖 User Stories](#-user-stories)
 - [🧩 Use Cases](#-use-cases)
-- [🏛️ Architektur](#architektur)
+- [🏛️ Architektur](#-architektur)
 - [🗄️ Datenbank und ORM](#-datenbank-und-orm)
 - [✅ Projektanforderungen](#-projektanforderungen)
 - [⚙️ Implementierung](#-implementierung)
@@ -30,7 +28,7 @@ Ziele des Projekts:
 - [👥 Team & Beiträge](#-team--beiträge)
 - [📝 Lizenz](#-lizenz)
 
----
+<br>
 
 ## 📝 Anwendungsanforderungen
 
@@ -46,10 +44,11 @@ Die Anwendung ermöglicht es Benutzern:
 - Einen Filmkatalog im Browser zu durchsuchen
 - Tickets für eine oder mehrere Personen zu buchen
 - Preise automatisch zu berechnen (inkl. Altersrabatte, Studentenrabatt, Wochenend- und Spätvorstellungszuschlag)
+- Tickets über Stripe zu bezahlen
 - Ein generiertes PDF-Ticket herunterzuladen
 - Den Filmkatalog zu verwalten (nur Admin)
 
----
+<br>
 
 ## 📖 User Stories
 
@@ -90,7 +89,7 @@ Als Admin möchte ich Filme im Katalog hinzufügen, bearbeiten und löschen kön
 - **Eingaben:** Filmattribute (Titel, Genre, Dauer, Altersfreigabe, Erscheinungsjahr, Regisseur, etc.)
 - **Ausgaben:** aktualisierter Filmkatalog
 
----
+<br>
 
 ## 🧩 Use Cases
 
@@ -112,7 +111,7 @@ Als Admin möchte ich Filme im Katalog hinzufügen, bearbeiten und löschen kön
 - **Kunde** – durchsucht Filme, bucht Tickets, lädt PDF herunter
 - **Admin** – verwaltet den Filmkatalog, hat alle Kundenrechte
 
----
+<br>
 <a id="-architektur"></a>
 
 ## 🏛️ Architektur
@@ -147,7 +146,7 @@ Als Admin möchte ich Filme im Katalog hinzufügen, bearbeiten und löschen kön
   Engine-Erstellung, Schema-Migration, Session-Lifecycle). Der Rest der Anwendung muss nicht wissen, wie der
   Datenbankmotor, Tabellen und Sessions verwaltet werden.
 
----
+<br>
 <a id="-datenbank-und-orm"></a>
 
 ## 🗄️ Datenbank und ORM
@@ -166,7 +165,7 @@ Die Anwendung verwendet **SQLModel**, um Domänenobjekte auf eine SQLite-Datenba
 - Ein `User` (Admin) kann viele `Movie`-Datensätze verwalten
 - Jede Buchung verknüpft einen `Movie` mit einer oder mehreren Personen (in-memory berechnet, Ausgabe als PDF)
 
----
+<br>
 
 ## ✅ Projektanforderungen
 
@@ -203,7 +202,7 @@ Alle persistenten Daten werden via **SQLModel** (ORM auf Basis von SQLAlchemy) v
 - `User`-Datensätze (inkl. Standard-Admin) werden über dieselbe Facade verwaltet
 - Schema-Migrationen (z. B. Hinzufügen der Spalte `isAdmin`) werden beim Start automatisch ausgeführt
 
----
+<br>
 <a id="-implementierung"></a>
 
 ## ⚙️ Implementierung
@@ -231,7 +230,7 @@ Alle persistenten Daten werden via **SQLModel** (ORM auf Basis von SQLAlchemy) v
 | `pytest`          | Testing                                       |
 | `pytest-cov`      | Test-Coverage-Auswertung                      |   
 
----
+<br>
 
 ## 📂 Repository-Struktur
 
@@ -263,7 +262,39 @@ tests/
 └── test_integration.py
 ```
 
----
+<br>
+
+## Projektmanagement
+### Step 1 - Projektziele setzen
+- Brainstorming über Funktionen
+
+### Step 2 – Tech Stack
+- Über FrameWorks & Technologien informieren & entscheiden
+- Z.B. welche Datenbank?
+- Projektstruktur planen
+
+### Step 3 - Datenbank einrichten
+- SQLLite DB einrichten
+- Mit SQLModel mit ORM in python Datenbank erstellen
+
+### Step 4 - UI schrittweise erstellen
+-  UI mit NiceGUI erstellen
+
+### Step 5 - Coaching
+- Im Coaching Feedback erhalten
+
+### Step 6 - Finalisierung
+- Verbesserungen nach dem Coaching implementieren
+- Z.B. Stripe oder PDF-Erstellung
+
+### Highlights: 
+- Erstes Python Web Framework
+- Stripe zum ersten mal verwendet
+- Coding Assistants ausprobiert
+
+### Herausforderungen: 
+- Wenig strukturiertes vorgehen
+
 
 ## 🚀 Ausführung
 
@@ -337,9 +368,8 @@ pip install stripe
 ### Omdb-API
 
 > OMDb wird für das automatische Laden von Filmpostern und Metadaten verwendet.
-<br>
-<br>
 
+<br>
 Für die Datenbank ist keine manuelle Konfiguration erforderlich. Beim ersten Start erstellt die Anwendung automatisch:
 
 - Die SQLite-Datenbank (`kinoverwaltungssystem/movies.db`)
@@ -376,7 +406,7 @@ Die im Terminal angezeigte URL öffnen (Standard: `http://localhost:8080`).
 
 > Screenshots der Hauptseiten hier einfügen (oder Link zu einem kurzen Video):
 
----
+<br>
 
 ## 🧪 Tests
 
@@ -417,7 +447,7 @@ pytest --cov=kinoverwaltungssystem tests/
 | Status                 | Bestanden / Fehlgeschlagen                 |
 | Kommentare             | Zusätzliche Hinweise oder gefundene Fehler |
 
----
+<br>
 
 ## 👥 Team & Beiträge
 
@@ -429,7 +459,7 @@ pytest --cov=kinoverwaltungssystem tests/
 | Simon Moor  | Database + documentation            |
 | Livio Fritz | Business logic + UI + documentation |
 
----
+<br>
 
 ## 📝 Lizenz
 
